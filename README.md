@@ -2,7 +2,7 @@
 
 ## Dominic Cupo, Joshua Bloom
 
-###Todo
+### Todo
 * Experiment Analysis
   1. Fix Group Rotation to match Brown's implementation 
   2. Add Angular Momentum 
