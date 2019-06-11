@@ -106,6 +106,7 @@ function step() {
 		}
 	}
 	updateStateTracking()
+	updateLEDS()
 }
 
 # This just handles the 0.0 - 10.0 --> 0, 1 conversion from genome to state
@@ -199,6 +200,14 @@ function updateStateTracking() {
 
 	avg_time_0 = total_time_0 / num_changes_0
 	avg_time_1 = total_time_1 / total_time_1
+}
+
+function updateLEDS() {
+    if (CUR_STATE == 0) {
+        set_leds(0, 255, 0)
+    } else {
+        set_leds(0, 0, 255)
+    }
 }
 
 function reset() {
