@@ -252,7 +252,7 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
 
     //Create the Analysis class, with the vectors from the data
     CAnalysis analysis(cGetRobotData.m_vecRobotX, cGetRobotData.m_vecRobotY, cGetRobotData.m_vecRobotZ,
-                       cGetRobotData.m_vecRobotSpeed, cGetRobotData.m_vecRobotState);
+                       cGetRobotData.m_vecRobotSpeed, cGetRobotData.m_vecRobotState, cGetRobotData.m_vecAvgRobotState0, cGetRobotData.m_vecAvgRobotState1);
 
     //Analyze all, and save the results in a struct that has each value.
     CAnalysis::AnalysisResults results = analysis.AnalyzeAll();
@@ -289,8 +289,8 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
                 //Same with the previous generations
 
                 //Find the distance from basic pythagorian method. Dist is the score
+                //TODO FIX THIS UP WITH NEW VALUES
                 Real dist = sqrt(pow(comp_sparseness - results.Sparseness, 2) +
-                                 pow(comp_distance - results.Distance, 2) +
                                  pow(comp_radial - results.RadialStdDev, 2) +
                                  pow(comp_speed - results.Speed, 2) +
                                  pow(comp_angular - results.AngularMomentum, 2));
@@ -325,9 +325,9 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
         }
 
         //Output the feature values and the score (minDistance)
+        //TODO ADD ALL THE EXTRA READINGS
         cScoreFile
                 << results.Sparseness << ','
-                << results.Distance << ','
                 << results.RadialStdDev << ','
                 << results.Speed << ','
                 << results.AngularMomentum << ','
