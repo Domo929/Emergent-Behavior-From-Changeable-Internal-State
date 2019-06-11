@@ -11,18 +11,18 @@
 CAnalysis::AnalysisResults CAnalysis::AnalyzeAll() {
     AnalysisResults results;
 
-    AnalyzeDistance();
     AnalyzeSparseness();
     AnalyzeSpeed();
     AnalyzeAngMomentum();
     AnalyzeState();
 
-    results.Distance = this->distance;
     results.Sparseness = this->sparseness;
     results.RadialStdDev = this->radialStdDev;
     results.Speed = this->speed;
     results.AngularMomentum = this->angMomentum;
     results.StateZeroCount = this->state0Count;
+    results.AvgStateTime0 = this->avgStateTime0;
+    results.AvgStateTime1 = this->avgStateTime1;
 
     return results;
 }
@@ -63,25 +63,6 @@ void CAnalysis::AnalyzeSparseness() {
     radialStdDev = (float) stdev;
 }
 
-void CAnalysis::AnalyzeDistance() {
-    //See above
-    int size = (int) m_vecRobotX.size();
-
-    std::vector<float> vecDistances;
-
-    for (int startPoint = 0; startPoint < size; ++startPoint) {
-        for (int referencePoint = 0; referencePoint < size; ++referencePoint) {
-            float distance = (float) sqrt(pow(m_vecRobotX[startPoint] - m_vecRobotX[referencePoint], 2) + pow(m_vecRobotY[startPoint] - m_vecRobotY[referencePoint], 2));
-            vecDistances.push_back(distance);
-        }
-
-    }
-
-    float avgDistance = accumulate(vecDistances.begin(), vecDistances.end(), 0.0) / vecDistances.size();
-
-    distance = avgDistance;
-}
-
 void CAnalysis::AnalyzeSpeed() {
     double avgSpeed = accumulate(m_vecRobotSpeed.begin(), m_vecRobotSpeed.end(), 0.0) / m_vecRobotSpeed.size();
     speed = float(avgSpeed);
@@ -102,4 +83,10 @@ void CAnalysis::AnalyzeState() {
         }
     }
     state0Count = counter;
+
+    auto avgTime0 = (float) accumulate(m_vecAvgRobotState0.begin(), m_vecAvgRobotState0.end(), 0.0) / m_vecAvgRobotState0.size();
+    auto avgTime1 = (float) accumulate(m_vecAvgRobotState1.begin(), m_vecAvgRobotState1.end(), 0.0) / m_vecAvgRobotState1.size();
+
+    avgStateTime0 = avgTime0;
+    avgStateTime1 = avgTime1;
 }

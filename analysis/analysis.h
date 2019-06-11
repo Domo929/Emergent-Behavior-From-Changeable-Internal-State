@@ -11,24 +11,28 @@
 class CAnalysis {
 public:
     CAnalysis(const std::vector<float> &vecRobotX, const std::vector<float> &vecRobotY,
-                  const std::vector<float> &vecRobotZ, const std::vector<float> &vecRobotSpeed,
-                  const std::vector<int> &vecRobotState) :
+              const std::vector<float> &vecRobotZ, const std::vector<float> &vecRobotSpeed,
+              const std::vector<int> &vecRobotState, const std::vector<float> vecAvgRobotState0,
+              const std::vector<float> vecAvgRobotState1) :
             m_vecRobotX(vecRobotX),
             m_vecRobotY(vecRobotY),
             m_vecRobotZ(vecRobotZ),
             m_vecRobotSpeed(vecRobotSpeed),
-            m_vecRobotState(vecRobotState){}
+            m_vecRobotState(vecRobotState),
+            m_vecAvgRobotState0(vecAvgRobotState0),
+            m_vecAvgRobotState1(vecAvgRobotState1) {}
 
     virtual ~CAnalysis() {}
 
     typedef struct {
-        int size = 6;
+        int size = 7;
         float Sparseness;
-        float Distance;
         float RadialStdDev;
         float Speed;
         float AngularMomentum;
         int StateZeroCount;
+        float AvgStateTime0;
+        float AvgStateTime1;
     } AnalysisResults;
 
     AnalysisResults AnalyzeAll();
@@ -39,21 +43,26 @@ private:
     std::vector<float> m_vecRobotZ;
     std::vector<float> m_vecRobotSpeed;
     std::vector<int> m_vecRobotState;
+    std::vector<float> m_vecAvgRobotState0;
+    std::vector<float> m_vecAvgRobotState1;
 
     float sparseness;
-    float distance;
     float radialStdDev;
     float speed;
     float angMomentum;
     int state0Count;
+    float avgStateTime0;
+    float avgStateTime1;
 
     double centroidX;
     double centroidY;
 
     void AnalyzeSparseness();
-    void AnalyzeDistance();
+
     void AnalyzeSpeed();
+
     void AnalyzeAngMomentum();
+
     void AnalyzeState();
 
 };
