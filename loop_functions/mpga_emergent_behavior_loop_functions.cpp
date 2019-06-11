@@ -100,6 +100,25 @@ struct GetRobotData : public CBuzzLoopFunctions::COperation {
 
         int iCurS = buzzobj_getint(tCurS);
 
+
+        buzzobj_t tAvg0 = BuzzGet(t_vm, "avg_time_0");
+        if (!buzzobj_isfloat(tAvg0)) {
+            LOGERR << str_robot_id << ": variable 'avg_time_0' has wrong type " << buzztype_desc[tAvg0->o.type] << std::endl;
+            return;
+        }
+
+        float fAvg0 = buzzobj_getfloat(tAvg0);
+
+        buzzobj_t tAvg1 = BuzzGet(t_vm, "avg_time_1");
+        if (!buzzobj_isfloat(tAvg1)) {
+            LOGERR << str_robot_id << ": variable 'avg_time_1' has wrong type " << buzztype_desc[tAvg1->o.type] << std::endl;
+            return;
+        }
+
+        float fAvg1 = buzzobj_getfloat(tAvg1);
+
+
+
         buzzobj_t tCurR = BuzzGet(t_vm, "cur_r");
         if (!buzzobj_isint(tCurR)) {
             LOGERR << str_robot_id << ": variable 'cur_r' has wrong type " << buzztype_desc[tCurR->o.type] << std::endl;
@@ -123,6 +142,8 @@ struct GetRobotData : public CBuzzLoopFunctions::COperation {
         m_vecRobotSpeed.push_back(fCurSpeed);
         m_vecRobotReading.push_back(iCurR);
         m_vecRobotState.push_back(iCurS);
+        m_vecAvgRobotState0.push_back(fAvg0);
+        m_vecAvgRobotState1.push_back(fAvg1);
 
     }
 
@@ -134,6 +155,8 @@ struct GetRobotData : public CBuzzLoopFunctions::COperation {
     std::vector<int> m_vecRobotState;
     std::vector<int> m_vecRobotReading;
     std::vector<float> m_vecRobotSpeed;
+    std::vector<float> m_vecAvgRobotState0;
+    std::vector<float> m_vecAvgRobotState1;
 
 };
 

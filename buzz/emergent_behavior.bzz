@@ -8,11 +8,21 @@ SEN_APERTURE_SPLIT_RAD = 0.5* SEN_APERTURE_DEG * math.pi / 180.0
 #Sensor distance in cm. Default is 300 cm
 SEN_DIST_CM = 300
 
-#Global variable for what the current state is
+#Global variable for what the current state is and most recent one
 CUR_STATE = 0
+PST_STATE = 0
 
 #Global variable for what the robots current speed is
 speed = 0.0
+
+#Global variables for how long the robot stays in each state
+total_time_0 = 0.0
+total_time_1 = 0.0
+num_changes_0 = 0.0
+num_changes_1 = 0.0
+
+avg_time_0 = 0.0
+avg_time_1 = 0.0
 
 # (Type)(Reading)(State)
 #   s*      0       0
@@ -41,6 +51,7 @@ genome = {
 function init() {
 	# Initializes the state, x, y, z, reading, and speed variables
 	CUR_STATE = id % 2
+	PST_STATE = id % 2
 	cur_x = pose.position.x
 	cur_y = pose.position.y
 	cur_z = pose.orientation.yaw
@@ -61,6 +72,8 @@ function step() {
 
 	# updates the internal fields for the loop functions at the end
 	updateFields(reading)
+
+	PST_STATE = CUR_STATE
 
 	# state machine to set wheels speeds and new state depending on current state and reading
 	if (CUR_STATE == 0) {
@@ -92,6 +105,7 @@ function step() {
             speed = calcSpeed(genome[16], genome[17])
 		}
 	}
+	updateStateTracking()
 }
 
 # This just handles the 0.0 - 10.0 --> 0, 1 conversion from genome to state
@@ -165,6 +179,26 @@ function updateFields(sensor_reading) {
 	cur_r = sensor_reading
 	cur_speed = speed
 
+}
+
+function updateStateTracking() {
+	if (CUR_STATE == PST_STATE) {
+		if (CUR_STATE == 0) {
+			total_time_0 = total_time_0 + 1.0
+		} else {
+			total_time_1 = total_time_1 + 1.0
+		}
+
+	} else {
+		if (PST_STATE == 0) {
+			num_changes_0 = num_changes_0 + 1.0
+		} else {
+			num_changes_0 = num_changes_0 + 1.0
+		}
+	}
+
+	avg_time_0 = total_time_0 / num_changes_0
+	avg_time_1 = total_time_1 / total_time_1
 }
 
 function reset() {
