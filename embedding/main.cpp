@@ -130,13 +130,13 @@ int main(int argc, char *argv[]) {
         for (UInt32 i = 0; i < cGA.GetPopulation().size(); ++i) {
             argos::LOG << " " << cGA.GetPopulation()[i]->Score;
         }
-        if (cGA.GetGeneration() % 5 == 0) {
-            argos::LOG << " [Flushing genome... ";
-            /* Flush scores of best individual */
-            FlushIndividual(*cGA.GetPopulation()[0],
-                            cGA.GetGeneration());
-            argos::LOG << "done.]";
-        }
+//        if (cGA.GetGeneration() % 5 == 0) {
+//            argos::LOG << " [Flushing genome... ";
+//            /* Flush scores of best individual */
+//            FlushIndividual(*cGA.GetPopulation()[0],
+//                            cGA.GetGeneration());
+//            argos::LOG << "done.]";
+//        }
         LOG << std::endl;
         argos::LOG << "Flushing scores to master file" << std::endl;
         FlushToMasterFile(cGA.getSlavePIDs());
