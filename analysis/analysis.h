@@ -26,7 +26,7 @@ public:
 
     typedef struct {
         int size = 7;
-        float Sparseness;
+        float Scatter;
         float RadialStdDev;
         float Speed;
         float AngularMomentum;
@@ -46,22 +46,29 @@ private:
     std::vector<float> m_vecAvgRobotState0;
     std::vector<float> m_vecAvgRobotState1;
 
-    float sparseness;
-    float radialStdDev;
+    float scatter;
+    float radialVariance;
     float speed;
     float angMomentum;
+    float groupRotation;
     int state0Count;
     float avgStateTime0;
     float avgStateTime1;
 
-    double centroidX;
-    double centroidY;
+    float arenaSize = 3.535;
 
-    void AnalyzeSparseness();
+    float centroidX;
+    float centroidY;
+
+    void AnalyzeScatter();
+
+    void AnalyzeRadialVariance();
 
     void AnalyzeSpeed();
 
     void AnalyzeAngMomentum();
+
+    void AnalyzeGroupRotation();
 
     void AnalyzeState();
 
