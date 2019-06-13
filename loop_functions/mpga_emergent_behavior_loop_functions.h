@@ -12,6 +12,8 @@
 
 #include <loop_functions/mpga_loop_functions.h>
 
+#include "analysis/analysis.h"
+
 /****************************************/
 /****************************************/
 
@@ -69,6 +71,11 @@ private:
     void CreateRobots(UInt32 un_robots);
 
     void printErr(std::string in);
+
+    CAnalysis::AnalysisResults AnalyzeSwarm(int swarmID, const std::vector<float> &vecRobotX, const std::vector<float> &vecRobotY,
+                                             const std::vector<float> &vecRobotZ, const std::vector<float> &vecRobotSpeed,
+                                             const std::vector<int> &vecRobotState, const std::vector<float> &vecAvgRobotState0,
+                                             const std::vector<float> &vecAvgRobotState1);
 
     /* The initial setup of a trial */
     struct SInitSetup {

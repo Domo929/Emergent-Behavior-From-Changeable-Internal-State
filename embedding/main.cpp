@@ -73,12 +73,30 @@ void FlushNamesToMasterFile() {
                         "s'21" << "," <<
                         "vl21" << "," <<
                         "vr21" << "," <<
-                        "sparse" << "," <<
-                        "dist" << "," <<
-                        "radial" << "," <<
+                        "scatter" << "," <<
+                        "radialVar" << "," <<
                         "speed" << "," <<
-                        "angle" << "," <<
+                        "angMom" << "," <<
+                        "grpRot" << "," <<
                         "state0" << "," <<
+                        "avgTs0" << "," <<
+                        "avgTs1" << "," <<
+                        "scatter_0" << "," <<
+                        "radialVar_0" << "," <<
+                        "speed_0" << "," <<
+                        "angMom_0" << "," <<
+                        "grpRot_0" << "," <<
+                        "state0_0" << "," <<
+                        "avgTs0_0" << "," <<
+                        "avgTs1_0" << "," <<
+                        "scatter_1" << "," <<
+                        "radialVar_1" << "," <<
+                        "speed_1" << "," <<
+                        "angMom_1" << "," <<
+                        "grpRot_1" << "," <<
+                        "state0_1" << "," <<
+                        "avgTs0_1" << "," <<
+                        "avgTs1_1" << "," <<
                         "SCORE" << std::endl;
 
     }
