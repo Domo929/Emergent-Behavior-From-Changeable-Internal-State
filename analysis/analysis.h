@@ -12,27 +12,39 @@ class CAnalysis {
 public:
     CAnalysis(const std::vector<float> &vecRobotX, const std::vector<float> &vecRobotY,
               const std::vector<float> &vecRobotZ, const std::vector<float> &vecRobotSpeed,
-              const std::vector<int> &vecRobotState, const std::vector<float> vecAvgRobotState0,
-              const std::vector<float> vecAvgRobotState1) :
+              const std::vector<int> &vecRobotState, const std::vector<float> &vecAvgRobotState0,
+              const std::vector<float> &vecAvgRobotState1) :
             m_vecRobotX(vecRobotX),
             m_vecRobotY(vecRobotY),
             m_vecRobotZ(vecRobotZ),
             m_vecRobotSpeed(vecRobotSpeed),
             m_vecRobotState(vecRobotState),
             m_vecAvgRobotState0(vecAvgRobotState0),
-            m_vecAvgRobotState1(vecAvgRobotState1) {}
+            m_vecAvgRobotState1(vecAvgRobotState1) {
+        scatter = -9.9f;
+        radialVariance = -9.9f;
+        speed = -9.9f;
+        angMomentum = -9.9f;
+        groupRotation = -9.9f;
+        state0Count = -9;
+        avgStateTime0 = -9.9f;
+        avgStateTime1 = -9.9f;
+        centroidX = -9.9f;
+        centroidY = -9.9f;
+    }
 
-    virtual ~CAnalysis() {}
+    virtual ~CAnalysis() = default;
 
     typedef struct {
-        int size = 7;
-        float Scatter;
-        float RadialStdDev;
-        float Speed;
-        float AngularMomentum;
-        int StateZeroCount;
-        float AvgStateTime0;
-        float AvgStateTime1;
+        int size = 8;
+        float Scatter = 0.0;
+        float RadialVariance = 0.0;
+        float Speed = 0.0;
+        float AngularMomentum = 0.0;
+        float GroupRotation = 0.0;
+        int StateZeroCount = 0;
+        float AvgStateTime0 = 0.0;
+        float AvgStateTime1 = 0.0;
     } AnalysisResults;
 
     AnalysisResults AnalyzeAll();

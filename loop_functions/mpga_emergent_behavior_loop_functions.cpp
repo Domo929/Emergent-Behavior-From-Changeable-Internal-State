@@ -291,7 +291,7 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
                 //Find the distance from basic pythagorian method. Dist is the score
                 //TODO FIX THIS UP WITH NEW VALUES
                 Real dist = sqrt(pow(comp_sparseness - results.Scatter, 2) +
-                                 pow(comp_radial - results.RadialStdDev, 2) +
+                                 pow(comp_radial - results.RadialVariance, 2) +
                                  pow(comp_speed - results.Speed, 2) +
                                  pow(comp_angular - results.AngularMomentum, 2));
 
@@ -328,7 +328,7 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
         //TODO ADD ALL THE EXTRA READINGS
         cScoreFile
                 << results.Scatter << ','
-                << results.RadialStdDev << ','
+                << results.RadialVariance << ','
                 << results.Speed << ','
                 << results.AngularMomentum << ','
                 << results.StateZeroCount << ','

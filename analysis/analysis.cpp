@@ -12,14 +12,17 @@ CAnalysis::AnalysisResults CAnalysis::AnalyzeAll() {
     AnalysisResults results;
 
     AnalyzeScatter();
+    AnalyzeRadialVariance();
+    AnalyzeGroupRotation();
     AnalyzeSpeed();
     AnalyzeAngMomentum();
     AnalyzeState();
 
     results.Scatter = this->scatter;
-    results.RadialStdDev = this->radialVariance;
+    results.RadialVariance = this->radialVariance;
     results.Speed = this->speed;
     results.AngularMomentum = this->angMomentum;
+    results.GroupRotation = this->groupRotation;
     results.StateZeroCount = this->state0Count;
     results.AvgStateTime0 = this->avgStateTime0;
     results.AvgStateTime1 = this->avgStateTime1;
@@ -86,7 +89,7 @@ void CAnalysis::AnalyzeAngMomentum() {
         vecCrossProd.push_back(cross_prod);
     }
 
-    angMomentum = (float) accumulate(vecCrossProd.begin(), vecCrossProd.end(), 0.0) / (vecCrossProd.size() * 3.535);
+    angMomentum = (float) accumulate(vecCrossProd.begin(), vecCrossProd.end(), 0.0) / (float) (vecCrossProd.size() * 3.535);
 }
 
 void CAnalysis::AnalyzeGroupRotation() {
