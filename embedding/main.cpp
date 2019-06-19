@@ -116,6 +116,7 @@ Real ScoreAggregator(const std::vector<Real> &vec_scores) {
 int main(int argc, char *argv[]) {
     if (argc != 2) {
         std::cerr << "Didn't provide the randseed" << std::endl;
+        return 1;
     }
 
     auto randSeed = (UInt32) atoi(argv[1]);
