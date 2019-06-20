@@ -10,10 +10,14 @@
 # Stop execution after any error
 set -e
 
+# Your user name
+# (Don't change this)
+MYUSER=$(whoami)
+
 # Cleanup function to be executed upon exit, for any reason
 function cleanup() {
-    mkdir -p /home/djcupo/ERRORS
-    cp * /home/djcupo/ERRORS
+    mkdir -p /home/${MYUSER}/ERRORS
+    cp * /home/${MYUSER}/ERRORS
     rm -rf ${WORKDIR}
 }
 
@@ -25,9 +29,7 @@ function cleanup() {
 #
 ########################################
 
-# Your user name
-# (Don't change this)
-MYUSER=$(whoami)
+
 
 # Path of the local storage on a node
 # Use this to avoid sending data streams over the network
