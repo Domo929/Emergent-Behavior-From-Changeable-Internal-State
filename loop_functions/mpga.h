@@ -115,6 +115,9 @@ public:
 
     const std::vector<pid_t> &getSlavePIDs() const;
 
+    /** Current generation */
+    UInt32 m_unCurrentGeneration;
+
 private:
 
     /** Executes the slave process that manages ARGoS */
@@ -205,8 +208,6 @@ protected:
     /** Current population */
     TPopulation m_tPopulation;
 
-    /** Current generation */
-    UInt32 m_unCurrentGeneration;
 
     /** The range of each allele in the genome */
     CRange<Real> m_cAlleleRange;

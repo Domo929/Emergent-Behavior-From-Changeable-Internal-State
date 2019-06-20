@@ -30,7 +30,7 @@ void FlushIndividual(const CMPGA::SIndividual &s_ind,
 /*
 * add all scores from each generation from the master file
 */
-void FlushToMasterFile(const std::vector<pid_t> &slavePIDs) {
+void FlushToMasterFile(const std::vector<pid_t> &slavePIDs, UInt32 randSeed, UInt32 genNumber) {
     std::ofstream masterScoreFile("master_scores.csv", std::ios::out | std::ios::app);
     if (masterScoreFile.is_open()) {
         for (auto pid : slavePIDs) {
@@ -38,7 +38,9 @@ void FlushToMasterFile(const std::vector<pid_t> &slavePIDs) {
             std::string line;
             if (indScoreFile.is_open()) {
                 while (getline(indScoreFile, line)) {
-                    masterScoreFile << line << std::endl;
+                    masterScoreFile << line << ","
+                                    << ToString(randSeed) + "_" + ToString(pid) + "_" + ToString(genNumber)
+                                    << std::endl;
                 }
             }
             indScoreFile.close();
@@ -47,6 +49,14 @@ void FlushToMasterFile(const std::vector<pid_t> &slavePIDs) {
     masterScoreFile.close();
 }
 
+void RenameExperiments(const std::vector<pid_t> &slavePIDs, UInt32 randSeed, UInt32 genNumber) {
+    for (auto pid : slavePIDs) {
+        std::string old_name = "experiment_" + ToString(pid) + ".csv";
+        std::string new_name =
+                "experiment_" + ToString(randSeed) + "_" + ToString(pid) + "_" + ToString(genNumber) + ".csv";
+        std::rename(old_name.c_str(), new_name.c_str());
+    }
+}
 /*
 * called when mater file gets created
 * names all columns in the csv
@@ -79,29 +89,13 @@ void FlushNamesToMasterFile() {
                         "angMom" << "," <<
                         "grpRot" << "," <<
                         "state0" << "," <<
-                        "avgTs0" << "," <<
-                        "avgTs1" << "," <<
-                        "scatter_0" << "," <<
-                        "radialVar_0" << "," <<
-                        "speed_0" << "," <<
-                        "angMom_0" << "," <<
-                        "grpRot_0" << "," <<
-                        "state0_0" << "," <<
-                        "avgTs0_0" << "," <<
-                        "avgTs1_0" << "," <<
-                        "scatter_1" << "," <<
-                        "radialVar_1" << "," <<
-                        "speed_1" << "," <<
-                        "angMom_1" << "," <<
-                        "grpRot_1" << "," <<
-                        "state0_1" << "," <<
-                        "avgTs0_1" << "," <<
-                        "avgTs1_1" << "," <<
-                        "SCORE" << std::endl;
+                        "Score" << "," <<
+                        "ExpID" << std::endl;
 
     }
     masterScoreFile.close();
 }
+
 
 /*
  * The function used to aggregate the scores of each trial.  In this
@@ -126,7 +120,7 @@ int main(int argc, char *argv[]) {
               2, //change this to number of cores       // Population size
               0.05,                                     // Mutation probability
               1,                                        // Number of trials
-              3, //make this not two                    // Number of generations
+              5, //make this not two                    // Number of generations
               true,                                     // Maximize score (False will minimize score)
               "experiments/emergent_behavior.argos",    // .argos conf file
               &ScoreAggregator,                         // The score aggregator
@@ -158,7 +152,8 @@ int main(int argc, char *argv[]) {
 //        }
         LOG << std::endl;
         argos::LOG << "Flushing scores to master file" << std::endl;
-        FlushToMasterFile(cGA.getSlavePIDs());
+        FlushToMasterFile(cGA.getSlavePIDs(), randSeed, cGA.m_unCurrentGeneration);
+        RenameExperiments(cGA.getSlavePIDs(), randSeed, cGA.m_unCurrentGeneration);
         LOG.Flush();
     }
     return 0;

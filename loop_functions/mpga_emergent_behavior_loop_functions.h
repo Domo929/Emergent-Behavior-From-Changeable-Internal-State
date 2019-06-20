@@ -35,11 +35,11 @@
  */
 static const size_t GENOME_SIZE = 18;
 
-const Real KHEPERAIV_BASE_RADIUS    = 0.0704;
-static const std::string KH_CONTROLLER      = "ebc";
-static const Real        KH_COMMRANGE       = 10. ;
-static const UInt32      KH_DATASIZE        = 300;
-static const Real        KH_INIT_DISTANCE   = 2 * KHEPERAIV_BASE_RADIUS * 0.01;
+const Real KHEPERAIV_BASE_RADIUS = 0.0704;
+static const std::string KH_CONTROLLER = "ebc";
+static const Real KH_COMMRANGE = 10.;
+static const UInt32 KH_DATASIZE = 300;
+static const Real KH_INIT_DISTANCE = 2 * KHEPERAIV_BASE_RADIUS * 0.01;
 
 /****************************************/
 /****************************************/
@@ -72,6 +72,13 @@ private:
 
     void CreateRobots(UInt32 un_robots);
 
+    void PrintExperiment(std::string filename, int currentTick,
+                         std::vector<float> m_vecRobotX,
+                         std::vector<float> m_vecRobotY,
+                         std::vector<int> m_vecRobotState,
+                         std::vector<int> m_vecRobotReading,
+                         std::vector<float> m_vecRobotSpeed);
+
     void printErr(std::string in);
 
     /* The initial setup of a trial */
@@ -81,8 +88,8 @@ private:
     };
 
     std::vector<SInitSetup> m_vecInitSetup;
-    std::vector<CKheperaIVEntity*> m_vecKheperas;
-    std::vector<CBuzzController*> m_vecControllers;
+    std::vector<CKheperaIVEntity *> m_vecKheperas;
+    std::vector<CBuzzController *> m_vecControllers;
     std::vector<Real> m_pfControllerParams;
     CRandom::CRNG *m_pcRNG;
 

@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 #include <cmath>
+#include <numeric>
 
 class CAnalysis {
 public:

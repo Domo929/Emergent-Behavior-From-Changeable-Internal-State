@@ -14,6 +14,9 @@ CUR_STATE = 0
 #Global variable for what the robots current speed is
 speed = 0.0
 
+#Global variable for what time step its on
+tick = 0
+
 # (Type)(Reading)(State)
 #   s*      0       0
 genome = {
@@ -59,9 +62,6 @@ function step() {
 	# gets the current sensor reading
 	var reading = sensor()
 
-	# updates the internal fields for the loop functions at the end
-	updateFields(reading)
-
 	PST_STATE = CUR_STATE
 
 	# state machine to set wheels speeds and new state depending on current state and reading
@@ -95,6 +95,9 @@ function step() {
 		}
 	}
 	updateLEDS()
+	# updates the internal fields for the loop functions at the end
+    updateFields(reading)
+	tick = tick + 1
 }
 
 # This just handles the 0.0 - 10.0 --> 0, 1 conversion from genome to state
