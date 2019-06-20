@@ -60,6 +60,8 @@ public:
 
     virtual void PreStep();
 
+    virtual void PostStep();
+
     /* Configures the robot controller from the genome */
     virtual void ConfigureFromGenome(const Real *pf_genome);
 
@@ -71,11 +73,6 @@ private:
     void CreateRobots(UInt32 un_robots);
 
     void printErr(std::string in);
-
-    CAnalysis::AnalysisResults AnalyzeSwarm(int swarmID, const std::vector<float> &vecRobotX, const std::vector<float> &vecRobotY,
-                                             const std::vector<float> &vecRobotZ, const std::vector<float> &vecRobotSpeed,
-                                             const std::vector<int> &vecRobotState, const std::vector<float> &vecAvgRobotState0,
-                                             const std::vector<float> &vecAvgRobotState1);
 
     /* The initial setup of a trial */
     struct SInitSetup {

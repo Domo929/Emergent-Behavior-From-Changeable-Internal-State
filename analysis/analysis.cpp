@@ -3,10 +3,6 @@
 //
 
 #include "analysis.h"
-#include <cmath>
-#include <numeric>
-#include <vector>
-#include <algorithm>
 
 CAnalysis::AnalysisResults CAnalysis::AnalyzeAll() {
     AnalysisResults results;
@@ -24,8 +20,6 @@ CAnalysis::AnalysisResults CAnalysis::AnalyzeAll() {
     results.AngularMomentum = this->angMomentum;
     results.GroupRotation = this->groupRotation;
     results.StateZeroCount = this->state0Count;
-    results.AvgStateTime0 = this->avgStateTime0;
-    results.AvgStateTime1 = this->avgStateTime1;
 
     return results;
 }
@@ -127,10 +121,4 @@ void CAnalysis::AnalyzeState() {
         }
     }
     state0Count = counter;
-
-    auto avgTime0 = (float) accumulate(m_vecAvgRobotState0.begin(), m_vecAvgRobotState0.end(), 0.0) / m_vecAvgRobotState0.size();
-    auto avgTime1 = (float) accumulate(m_vecAvgRobotState1.begin(), m_vecAvgRobotState1.end(), 0.0) / m_vecAvgRobotState1.size();
-
-    avgStateTime0 = avgTime0;
-    avgStateTime1 = avgTime1;
 }

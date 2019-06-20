@@ -53,11 +53,11 @@ struct PutGenome : public CBuzzLoopFunctions::COperation {
 /**
  * Functor to get data from the robots
  */
-struct GetRobotData : public CBuzzLoopFunctions::COperation {
+struct GetFinalRobotData : public CBuzzLoopFunctions::COperation {
 
     /** Constructor */
     //temp is unneeded, but if we get rid of it, it errors out. So we left it in *shrug*
-    GetRobotData(int t) : temp(t) {}
+    GetFinalRobotData(int t) : temp(t) {}
 
     /** The action happens here */
     virtual void operator()(const std::string& str_robot_id,
@@ -101,24 +101,6 @@ struct GetRobotData : public CBuzzLoopFunctions::COperation {
         int iCurS = buzzobj_getint(tCurS);
 
 
-        buzzobj_t tAvg0 = BuzzGet(t_vm, "avg_time_0");
-        if (!buzzobj_isfloat(tAvg0)) {
-            LOGERR << str_robot_id << ": variable 'avg_time_0' has wrong type " << buzztype_desc[tAvg0->o.type] << std::endl;
-            return;
-        }
-
-        float fAvg0 = buzzobj_getfloat(tAvg0);
-
-        buzzobj_t tAvg1 = BuzzGet(t_vm, "avg_time_1");
-        if (!buzzobj_isfloat(tAvg1)) {
-            LOGERR << str_robot_id << ": variable 'avg_time_1' has wrong type " << buzztype_desc[tAvg1->o.type] << std::endl;
-            return;
-        }
-
-        float fAvg1 = buzzobj_getfloat(tAvg1);
-
-
-
         buzzobj_t tCurR = BuzzGet(t_vm, "cur_r");
         if (!buzzobj_isint(tCurR)) {
             LOGERR << str_robot_id << ": variable 'cur_r' has wrong type " << buzztype_desc[tCurR->o.type] << std::endl;
@@ -142,8 +124,6 @@ struct GetRobotData : public CBuzzLoopFunctions::COperation {
         m_vecRobotSpeed.push_back(fCurSpeed);
         m_vecRobotReading.push_back(iCurR);
         m_vecRobotState.push_back(iCurS);
-        m_vecAvgRobotState0.push_back(fAvg0);
-        m_vecAvgRobotState1.push_back(fAvg1);
 
     }
 
@@ -155,8 +135,6 @@ struct GetRobotData : public CBuzzLoopFunctions::COperation {
     std::vector<int> m_vecRobotState;
     std::vector<int> m_vecRobotReading;
     std::vector<float> m_vecRobotSpeed;
-    std::vector<float> m_vecAvgRobotState0;
-    std::vector<float> m_vecAvgRobotState1;
 
 };
 
@@ -227,6 +205,12 @@ void CMPGAEmergentBehaviorLoopFunctions::PreStep() {
 /****************************************/
 /****************************************/
 
+void CMPGAEmergentBehaviorLoopFunctions::PostStep() {
+
+}
+/****************************************/
+/****************************************/
+
 //This is just a wrapper that takes the genome values supplied by MPGA and places them in the buzz script
 void CMPGAEmergentBehaviorLoopFunctions::ConfigureFromGenome(const Real *pf_genome) {
     printErr("Started Config from Genome");
@@ -242,66 +226,21 @@ void CMPGAEmergentBehaviorLoopFunctions::ConfigureFromGenome(const Real *pf_geno
 /****************************************/
 /****************************************/
 
-CAnalysis::AnalysisResults
-CMPGAEmergentBehaviorLoopFunctions::AnalyzeSwarm(int swarmID, const std::vector<float> &vecRobotX,
-                                                 const std::vector<float> &vecRobotY,
-                                                 const std::vector<float> &vecRobotZ,
-                                                 const std::vector<float> &vecRobotSpeed,
-                                                 const std::vector<int> &vecRobotState,
-                                                 const std::vector<float> &vecAvgRobotState0,
-                                                 const std::vector<float> &vecAvgRobotState1) {
-    std::vector<int> stateIndexes;
-    for (int i = 0; i < vecRobotState.size(); ++i) {
-        if (vecRobotState[i] == swarmID){
-            stateIndexes.push_back(i);
-        }
-    }
-
-    std::vector<float> filteredRobotX;
-    std::vector<float> filteredRobotY;
-    std::vector<float> filteredRobotZ;
-    std::vector<float> filteredRobotSpeed;
-    std::vector<int> filteredRobotState;
-    std::vector<float> filteredRobotState0;
-    std::vector<float> filteredRobotState1;
-
-    for(auto index : stateIndexes){
-        filteredRobotX.push_back(vecRobotX[index]);
-        filteredRobotY.push_back(vecRobotY[index]);
-        filteredRobotZ.push_back(vecRobotZ[index]);
-        filteredRobotSpeed.push_back(vecRobotSpeed[index]);
-        filteredRobotState.push_back(vecRobotState[index]);
-        filteredRobotState0.push_back(vecAvgRobotState0[index]);
-        filteredRobotState1.push_back(vecAvgRobotState1[index]);
-    }
-
-    CAnalysis analysis(filteredRobotX, filteredRobotY, filteredRobotZ, filteredRobotSpeed, filteredRobotState, filteredRobotState0, filteredRobotState1);
-    return analysis.AnalyzeAll();
-}
-
-/****************************************/
-/****************************************/
-
 //Oh buddy
 Real CMPGAEmergentBehaviorLoopFunctions::Score() {
     // printErr("Started Score");
     //Get the robot data
-    GetRobotData cGetRobotData(0);
+    GetFinalRobotData cGetRobotData(0);
     BuzzForeachVM(cGetRobotData);
     // printErr("Finished Get data");
 
     //Create the Analysis class, with the vectors from the data
     CAnalysis fullSwarmAnalysis(cGetRobotData.m_vecRobotX, cGetRobotData.m_vecRobotY, cGetRobotData.m_vecRobotZ,
-                       cGetRobotData.m_vecRobotSpeed, cGetRobotData.m_vecRobotState, cGetRobotData.m_vecAvgRobotState0, cGetRobotData.m_vecAvgRobotState1);
+                                cGetRobotData.m_vecRobotSpeed, cGetRobotData.m_vecRobotState);
 
     //Analyze all, and save the results in a struct that has each value.
     CAnalysis::AnalysisResults fullSwarmResults = fullSwarmAnalysis.AnalyzeAll();
 
-    CAnalysis::AnalysisResults swarm0Results = AnalyzeSwarm(0, cGetRobotData.m_vecRobotX, cGetRobotData.m_vecRobotY, cGetRobotData.m_vecRobotZ,
-                                                            cGetRobotData.m_vecRobotSpeed, cGetRobotData.m_vecRobotState, cGetRobotData.m_vecAvgRobotState0, cGetRobotData.m_vecAvgRobotState1);
-
-    CAnalysis::AnalysisResults swarm1Results = AnalyzeSwarm(1, cGetRobotData.m_vecRobotX, cGetRobotData.m_vecRobotY, cGetRobotData.m_vecRobotZ,
-                                                            cGetRobotData.m_vecRobotSpeed, cGetRobotData.m_vecRobotState, cGetRobotData.m_vecAvgRobotState0, cGetRobotData.m_vecAvgRobotState1);
     //Open the master file as READ-ONLY. This is important, you can open a file from multiple locations read only, but if you try to open it to write things get fucky. Don't let them get fucky.
     std::ifstream score_files("master_scores.csv", std::ios::in);
 
@@ -319,10 +258,10 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
         while(getline( score_files, line)){
             if(skipped){
                 //Make and array the size of the genome + the size of the feature values for the whole swarm and each state + 1 for the score tacked onto the end
-                double scores[GENOME_SIZE + fullSwarmResults.size + swarm0Results.size + swarm1Results.size + 1]; //Genomes, feature scores, +1 for the actual score that gets added
+                double scores[GENOME_SIZE + fullSwarmResults.size +
+                              1]; //Genomes, feature scores, +1 for the actual score that gets added
 
                 //Parse the line and store the values in scores array
-                ParseValues(line, (UInt32) GENOME_SIZE + fullSwarmResults.size + swarm0Results.size + swarm1Results.size, scores ,',');
 
                 //Pull out the values for easier reference
                 Real comp_full_scatter = scores[GENOME_SIZE];
@@ -331,26 +270,7 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
                 Real comp_full_angMomentum = scores[GENOME_SIZE + 3];
                 Real comp_full_groupRotation = scores[GENOME_SIZE + 4];
                 Real comp_full_state0 = scores[GENOME_SIZE + 5];
-                Real comp_full_avg0 = scores[GENOME_SIZE + 6];
-                Real comp_full_avg1 = scores[GENOME_SIZE + 7];
 
-//                Real comp_swarm0_scatter = scores[GENOME_SIZE + 8];
-//                Real comp_swarm0_variance = scores[GENOME_SIZE + 9];
-//                Real comp_swarm0_speed = scores[GENOME_SIZE + 10];
-//                Real comp_swarm0_angMomentum = scores[GENOME_SIZE + 11];
-//                Real comp_swarm0_groupRotation = scores[GENOME_SIZE + 12];
-//                Real comp_swarm0_state0 = scores[GENOME_SIZE + 13];
-//                Real comp_swarm0_avg0 = scores[GENOME_SIZE + 14];
-//                Real comp_swarm0_avg1 = scores[GENOME_SIZE + 15];
-//
-//                Real comp_swarm1_scatter = scores[GENOME_SIZE + 16];
-//                Real comp_swarm1_variance = scores[GENOME_SIZE + 17];
-//                Real comp_swarm1_speed = scores[GENOME_SIZE + 18];
-//                Real comp_swarm1_angMomentum = scores[GENOME_SIZE + 19];
-//                Real comp_swarm1_groupRotation = scores[GENOME_SIZE + 20];
-//                Real comp_swarm1_state0 = scores[GENOME_SIZE + 21];
-//                Real comp_swarm1_avg0 = scores[GENOME_SIZE + 22];
-//                Real comp_swarm1_avg1 = scores[GENOME_SIZE + 23];
 
                 //State difference is not calculated as part of the score
                 //Same with the previous generations
@@ -361,9 +281,7 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
                                  pow(comp_full_speed - fullSwarmResults.Speed, 2) +
                                  pow(comp_full_angMomentum - fullSwarmResults.AngularMomentum, 2) +
                                  pow(comp_full_groupRotation - fullSwarmResults.GroupRotation, 2) +
-                                 pow(comp_full_state0 - fullSwarmResults.StateZeroCount, 2) +
-                                 pow(comp_full_avg0 - fullSwarmResults.AvgStateTime0, 2) +
-                                 pow(comp_full_avg1 - fullSwarmResults.AvgStateTime1, 2));
+                                 pow(comp_full_state0 - fullSwarmResults.StateZeroCount, 2));
 
                 //We want to find the shortest distance
                 if (dist < minDistance){
@@ -382,7 +300,7 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
     score_files.close();
 
 
-    // printErr("Flushing genomes to inidividual files");
+    // printErr("Flushing genomes to individual files");
 
     //Open the file for that genome.
     std::ofstream cScoreFile(std::string("score_" + ToString(::getpid()) + ".csv").c_str(), std::ios::out | std::ios::trunc);
@@ -395,7 +313,6 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
         }
 
         //Output the feature values and the score (minDistance)
-        //TODO ADD ALL THE EXTRA READINGS
         cScoreFile
                 << fullSwarmResults.Scatter << ','
                 << fullSwarmResults.RadialVariance << ','
@@ -403,8 +320,6 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
                 << fullSwarmResults.AngularMomentum << ','
                 << fullSwarmResults.GroupRotation << ','
                 << fullSwarmResults.StateZeroCount << ','
-                << fullSwarmResults.AvgStateTime0 << ','
-                << fullSwarmResults.AvgStateTime1 << ','
                 << minDistance << std::endl;
     } else {
         //panic
