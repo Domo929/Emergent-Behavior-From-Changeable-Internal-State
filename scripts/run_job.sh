@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #SBATCH -J emergent_behavior
 #SBATCH -N 1
-#SBATCH -n 24
+#SBATCH -n 8
 #SBATCH --mem 8G
 #SBATCH --gres=gpu:0
 #SBATCH -t 3:00:00
