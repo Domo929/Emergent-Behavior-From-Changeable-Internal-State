@@ -46,7 +46,7 @@ export PATH=$PATH:$HOME/buzzbundle/bin
 
 # Folder where you want your data to be stored
 # (Adapt this to your needs)
-DATADIR=~/Experiment_Results
+DATADIR=/home/${MYUSER}/Experiment_Results
 
 # Path to the file template.argos
 # (Adapt this to your needs)
@@ -95,10 +95,10 @@ trap cleanup EXIT SIGINT SIGTERM
 #
 ########################################
 
-cp -r /home/djcupo/Swarms_Group_2/experiments .
-cp -r /home/djcupo/Swarms_Group_2/buzz .
-/home/djcupo/buzzbundle/bin/bzzc buzz/emergent_behavior.bzz
-/home/djcupo/Swarms_Group_2/build/embedding/mpga_emergent_behavior ${RAND_SEED}
+cp -r /home/${MYUSER}/Emergent-Behavior-From-Changeable-Internal-State/experiments .
+cp -r /home/${MYUSER}/Emergent-Behavior-From-Changeable-Internal-State/buzz .
+/home/${MYUSER}/buzzbundle/bin/bzzc buzz/emergent_behavior.bzz
+/home/${MYUSER}/Emergent-Behavior-From-Changeable-Internal-State/build/embedding/mpga_emergent_behavior ${RAND_SEED}
 
 # Transfer info back to my home directory
 mkdir data_${THISJOB}
