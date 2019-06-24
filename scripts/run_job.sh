@@ -104,7 +104,7 @@ cp -r /home/${MYUSER}/Emergent-Behavior-From-Changeable-Internal-State/buzz .
 
 # Transfer info back to my home directory
 mkdir data_${THISJOB}
-mv *.dat *.csv data_${THISJOB}/
+mv *.csv data_${THISJOB}/
 zip data_${THISJOB}.zip data_${THISJOB}/*
 
 cp -a data_${THISJOB}.zip ${DATADIR}
