@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #SBATCH -J emergent_behavior
 #SBATCH -N 1
-#SBATCH -n 24
+#SBATCH -n 8
 #SBATCH --mem 8G
 #SBATCH --gres=gpu:0
 #SBATCH -t 3:00:00
@@ -10,10 +10,14 @@
 # Stop execution after any error
 set -e
 
+# Your user name
+# (Don't change this)
+MYUSER=$(whoami)
+
 # Cleanup function to be executed upon exit, for any reason
 function cleanup() {
-    mkdir -p /home/djcupo/ERRORS
-    cp * /home/djcupo/ERRORS
+    mkdir -p /home/${MYUSER}/ERRORS
+    cp * /home/${MYUSER}/ERRORS
     rm -rf ${WORKDIR}
 }
 
@@ -25,9 +29,7 @@ function cleanup() {
 #
 ########################################
 
-# Your user name
-# (Don't change this)
-MYUSER=$(whoami)
+
 
 # Path of the local storage on a node
 # Use this to avoid sending data streams over the network
@@ -46,7 +48,7 @@ export PATH=$PATH:$HOME/buzzbundle/bin
 
 # Folder where you want your data to be stored
 # (Adapt this to your needs)
-DATADIR=~/Experiment_Results
+DATADIR=/home/${MYUSER}/Experiment_Results
 
 # Path to the file template.argos
 # (Adapt this to your needs)
@@ -95,14 +97,14 @@ trap cleanup EXIT SIGINT SIGTERM
 #
 ########################################
 
-cp -r /home/djcupo/Swarms_Group_2/experiments .
-cp -r /home/djcupo/Swarms_Group_2/buzz .
-/home/djcupo/buzzbundle/bin/bzzc buzz/emergent_behavior.bzz
-/home/djcupo/Swarms_Group_2/build/embedding/mpga_emergent_behavior ${RAND_SEED}
+cp -r /home/${MYUSER}/Emergent-Behavior-From-Changeable-Internal-State/experiments .
+cp -r /home/${MYUSER}/Emergent-Behavior-From-Changeable-Internal-State/buzz .
+/home/${MYUSER}/buzzbundle/bin/bzzc buzz/emergent_behavior.bzz
+/home/${MYUSER}/Emergent-Behavior-From-Changeable-Internal-State/build/embedding/mpga_emergent_behavior ${RAND_SEED}
 
 # Transfer info back to my home directory
 mkdir data_${THISJOB}
-mv *.dat *.csv data_${THISJOB}/
+mv *.csv data_${THISJOB}/
 zip data_${THISJOB}.zip data_${THISJOB}/*
 
 cp -a data_${THISJOB}.zip ${DATADIR}

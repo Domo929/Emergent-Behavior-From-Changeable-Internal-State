@@ -36,7 +36,7 @@ struct PutGenome : public CBuzzLoopFunctions::COperation {
                             buzzvm_t t_vm) {
         /* Set the values of the table 'genome' in the Buzz VM */
         BuzzTableOpen(t_vm, "genome");
-        for(int i = 0; i < m_vecGenome.size(); ++i) {
+        for (int i = 0; i < m_vecGenome.size(); ++i) {
             BuzzTablePut(t_vm, i, (float) m_vecGenome[i]);
         }
         BuzzTableClose(t_vm);
@@ -53,11 +53,11 @@ struct PutGenome : public CBuzzLoopFunctions::COperation {
 /**
  * Functor to get data from the robots
  */
-struct GetRobotData : public CBuzzLoopFunctions::COperation {
+struct GetFinalRobotData : public CBuzzLoopFunctions::COperation {
 
     /** Constructor */
     //temp is unneeded, but if we get rid of it, it errors out. So we left it in *shrug*
-    GetRobotData(int t) : temp(t) {}
+    GetFinalRobotData(int t) : temp(t) {}
 
     /** The action happens here */
     virtual void operator()(const std::string &str_robot_id,
@@ -101,24 +101,6 @@ struct GetRobotData : public CBuzzLoopFunctions::COperation {
         int iCurS = buzzobj_getint(tCurS);
 
 
-        buzzobj_t tAvg0 = BuzzGet(t_vm, "avg_time_0");
-        if (!buzzobj_isfloat(tAvg0)) {
-            LOGERR << str_robot_id << ": variable 'avg_time_0' has wrong type " << buzztype_desc[tAvg0->o.type] << std::endl;
-            return;
-        }
-
-        float fAvg0 = buzzobj_getfloat(tAvg0);
-
-        buzzobj_t tAvg1 = BuzzGet(t_vm, "avg_time_1");
-        if (!buzzobj_isfloat(tAvg1)) {
-            LOGERR << str_robot_id << ": variable 'avg_time_1' has wrong type " << buzztype_desc[tAvg1->o.type] << std::endl;
-            return;
-        }
-
-        float fAvg1 = buzzobj_getfloat(tAvg1);
-
-
-
         buzzobj_t tCurR = BuzzGet(t_vm, "cur_r");
         if (!buzzobj_isint(tCurR)) {
             LOGERR << str_robot_id << ": variable 'cur_r' has wrong type " << buzztype_desc[tCurR->o.type] << std::endl;
@@ -129,7 +111,8 @@ struct GetRobotData : public CBuzzLoopFunctions::COperation {
 
         buzzobj_t tCurSpeed = BuzzGet(t_vm, "cur_speed");
         if (!buzzobj_isfloat(tCurSpeed)) {
-            LOGERR << str_robot_id << ": variable 'cur_speed' has wrong type " << buzztype_desc[tCurSpeed->o.type] << std::endl;
+            LOGERR << str_robot_id << ": variable 'cur_speed' has wrong type " << buzztype_desc[tCurSpeed->o.type]
+                   << std::endl;
             return;
         }
 
@@ -142,8 +125,6 @@ struct GetRobotData : public CBuzzLoopFunctions::COperation {
         m_vecRobotSpeed.push_back(fCurSpeed);
         m_vecRobotReading.push_back(iCurR);
         m_vecRobotState.push_back(iCurS);
-        m_vecAvgRobotState0.push_back(fAvg0);
-        m_vecAvgRobotState1.push_back(fAvg1);
 
     }
 
@@ -155,8 +136,95 @@ struct GetRobotData : public CBuzzLoopFunctions::COperation {
     std::vector<int> m_vecRobotState;
     std::vector<int> m_vecRobotReading;
     std::vector<float> m_vecRobotSpeed;
-    std::vector<float> m_vecAvgRobotState0;
-    std::vector<float> m_vecAvgRobotState1;
+
+};
+
+/****************************************/
+/****************************************/
+
+struct GetStepRobotData : public CBuzzLoopFunctions::COperation {
+
+    /** Constructor */
+    //temp is unneeded, but if we get rid of it, it errors out. So we left it in *shrug*
+    GetStepRobotData(int t) : temp(t) {}
+
+    /** The action happens here */
+    virtual void operator()(const std::string &str_robot_id,
+                            buzzvm_t t_vm) {
+
+        // get the buzzobj corresponding to the value we want
+        buzzobj_t tCurX = BuzzGet(t_vm, "cur_x");
+
+        // confirm the value is the type we expect. Print error and then exit if they don't match
+        if (!buzzobj_isfloat(tCurX)) {
+            LOGERR << str_robot_id << ": variable 'cur_x' has wrong type " << buzztype_desc[tCurX->o.type] << std::endl;
+            return;
+        }
+
+        //Cast the value to the appropriate type and variable
+        float fCurX = buzzobj_getfloat(tCurX);
+
+        //Repeat the process with every other variable
+        buzzobj_t tCurY = BuzzGet(t_vm, "cur_y");
+        if (!buzzobj_isfloat(tCurY)) {
+            LOGERR << str_robot_id << ": variable 'cur_y' has wrong type " << buzztype_desc[tCurY->o.type] << std::endl;
+            return;
+        }
+
+        float fCurY = buzzobj_getfloat(tCurY);
+
+        buzzobj_t tCurS = BuzzGet(t_vm, "cur_s");
+        if (!buzzobj_isint(tCurS)) {
+            LOGERR << str_robot_id << ": variable 'cur_s' has wrong type " << buzztype_desc[tCurS->o.type] << std::endl;
+            return;
+        }
+
+        int iCurS = buzzobj_getint(tCurS);
+
+
+        buzzobj_t tCurR = BuzzGet(t_vm, "cur_r");
+        if (!buzzobj_isint(tCurR)) {
+            LOGERR << str_robot_id << ": variable 'cur_r' has wrong type " << buzztype_desc[tCurR->o.type] << std::endl;
+            return;
+        }
+
+        int iCurR = buzzobj_getint(tCurR);
+
+        buzzobj_t tCurSpeed = BuzzGet(t_vm, "cur_speed");
+        if (!buzzobj_isfloat(tCurSpeed)) {
+            LOGERR << str_robot_id << ": variable 'cur_speed' has wrong type " << buzztype_desc[tCurSpeed->o.type]
+                   << std::endl;
+            return;
+        }
+
+        float fCurSpeed = buzzobj_getfloat(tCurSpeed);
+
+        buzzobj_t tCurTick = BuzzGet(t_vm, "tick");
+        if (!buzzobj_isint(tCurTick)) {
+            LOGERR << str_robot_id << ": variable 'tick' has wrong type " << buzztype_desc[tCurTick->o.type]
+                   << std::endl;
+            return;
+        }
+        int iCurTick = buzzobj_getint(tCurTick);
+
+        //Add each value to the back of the vector that stores all this
+        m_vecRobotX.push_back(fCurX);
+        m_vecRobotY.push_back(fCurY);
+        m_vecRobotSpeed.push_back(fCurSpeed);
+        m_vecRobotReading.push_back(iCurR);
+        m_vecRobotState.push_back(iCurS);
+        currentTick = iCurTick;
+
+    }
+
+    int temp;
+
+    int currentTick;
+    std::vector<float> m_vecRobotX;
+    std::vector<float> m_vecRobotY;
+    std::vector<int> m_vecRobotState;
+    std::vector<int> m_vecRobotReading;
+    std::vector<float> m_vecRobotSpeed;
 
 };
 
@@ -226,6 +294,18 @@ void CMPGAEmergentBehaviorLoopFunctions::PreStep() {
 /****************************************/
 /****************************************/
 
+void CMPGAEmergentBehaviorLoopFunctions::PostStep() {
+    GetStepRobotData cGetStepRobotData(0);
+    BuzzForeachVM(cGetStepRobotData);
+
+    PrintExperiment(std::string("experiment_" + ToString(::getpid()) + ".csv"), cGetStepRobotData.currentTick,
+                    cGetStepRobotData.m_vecRobotX, cGetStepRobotData.m_vecRobotY,
+                    cGetStepRobotData.m_vecRobotState, cGetStepRobotData.m_vecRobotReading,
+                    cGetStepRobotData.m_vecRobotSpeed);
+}
+/****************************************/
+/****************************************/
+
 //This is just a wrapper that takes the genome values supplied by MPGA and places them in the buzz script
 void CMPGAEmergentBehaviorLoopFunctions::ConfigureFromGenome(const Real *pf_genome) {
     printErr("Started Config from Genome");
@@ -285,13 +365,14 @@ CMPGAEmergentBehaviorLoopFunctions::AnalyzeSwarm(int swarmID, const std::vector<
 Real CMPGAEmergentBehaviorLoopFunctions::Score() {
     // printErr("Started Score");
     //Get the robot data
-    GetRobotData cGetRobotData(0);
+    GetFinalRobotData cGetRobotData(0);
     BuzzForeachVM(cGetRobotData);
     // printErr("Finished Get data");
 
     //Create the Analysis class, with the vectors from the data
     CAnalysis fullSwarmAnalysis(cGetRobotData.m_vecRobotX, cGetRobotData.m_vecRobotY, cGetRobotData.m_vecRobotZ,
-                                cGetRobotData.m_vecRobotSpeed, cGetRobotData.m_vecRobotState, cGetRobotData.m_vecAvgRobotState0, cGetRobotData.m_vecAvgRobotState1);
+                                cGetRobotData.m_vecRobotSpeed, cGetRobotData.m_vecRobotState);
+
 
     //Analyze all, and save the results in a struct that has each value.
     CAnalysis::AnalysisResults fullSwarmResults = fullSwarmAnalysis.AnalyzeAll();
@@ -313,15 +394,16 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
     bool skipped = false;
 
     //Confirm the file opened
-    if(score_files.is_open()) {
+    if (score_files.is_open()) {
         //While loop to iterate over each line. getLine will return 0 when there are no more lines, exiting the loop
-        while(getline( score_files, line)) {
-            if(skipped) {
+        while (getline(score_files, line)) {
+            if (skipped) {
                 //Make and array the size of the genome + the size of the feature values for the whole swarm and each state + 1 for the score tacked onto the end
-                double scores[GENOME_SIZE + fullSwarmResults.size + swarm0Results.size + swarm1Results.size + 1 - 2 - 2]; //Genomes, feature scores, +1 for the actual score that gets added
+                double scores[GENOME_SIZE + fullSwarmResults.size +
+                              2]; //Genomes, feature scores, +1 for the actual score that gets added, +1 again for the experiment identifier
 
                 //Parse the line and store the values in scores array
-                ParseValues(line, (UInt32) GENOME_SIZE + 20, scores, ',');
+                ParseValues(line, (UInt32) GENOME_SIZE + fullSwarmResults.size + 2, scores, ',');
 
                 //Pull out the values for easier reference
                 Real comp_full_scatter = scores[GENOME_SIZE];
@@ -353,6 +435,7 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
                 //Same with the previous generations
 
                 //Find the distance from basic Pythagorean method. Dist is the score
+
                 Real dist = sqrt(
                                 pow(comp_full_scatter - fullSwarmResults.Scatter, 2) +
                                 pow(comp_full_variance - fullSwarmResults.RadialVariance, 2) +
@@ -379,6 +462,7 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
                                 pow(comp_swarm1_state0 - swarm1Results.StateZeroCount, 2)
                             );
 
+
                 //We want to find the shortest distance
                 if (dist < minDistance) {
                     minDistance = dist;
@@ -396,20 +480,20 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
     score_files.close();
 
 
-    // printErr("Flushing genomes to inidividual files");
+    // printErr("Flushing genomes to individual files");
 
     //Open the file for that genome.
-    std::ofstream cScoreFile(std::string("score_" + ToString(::getpid()) + ".csv").c_str(), std::ios::out | std::ios::trunc);
+    std::ofstream cScoreFile(std::string("score_" + ToString(::getpid()) + ".csv").c_str(),
+                             std::ios::out | std::ios::trunc);
 
     //Confirm the file is open
-    if(cScoreFile.is_open()) {
+    if (cScoreFile.is_open()) {
         //Output each genome value
-        for(auto val : m_pfControllerParams) {
+        for (auto val : m_pfControllerParams) {
             cScoreFile << val << ',';
         }
 
         //Output the feature values and the score (minDistance)
-        //TODO ADD ALL THE EXTRA READINGS
         cScoreFile
                 << fullSwarmResults.Scatter << ','
                 << fullSwarmResults.RadialVariance << ','
@@ -435,7 +519,6 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
                 << swarm1Results.GroupRotation << ','
                 << swarm1Results.StateZeroCount << ','
 
-
                 << minDistance << std::endl;
     } else {
         //panic
@@ -454,8 +537,8 @@ void CMPGAEmergentBehaviorLoopFunctions::CreateRobots(UInt32 un_robots) {
     CRadians robStep = CRadians::TWO_PI / static_cast<Real>(un_robots);
     CRadians cOrient;
 
-    //for each robot, calculate the positon based on spherical coordinates
-    for(size_t i = 0; i < un_robots; ++i) {
+    //for each robot, calculate the position based on spherical coordinates
+    for (size_t i = 0; i < un_robots; ++i) {
         CVector3 pos;
         pos.FromSphericalCoords(
             2.0f,
@@ -474,19 +557,21 @@ void CMPGAEmergentBehaviorLoopFunctions::CreateRobots(UInt32 un_robots) {
         );
         /* Create robot */
         CKheperaIVEntity *pcRobot = new CKheperaIVEntity(
-            "kh" + ToString(i),
-            KH_CONTROLLER,
-            pos,
-            head,
-            KH_COMMRANGE,
-            KH_DATASIZE);
+                "kh" + ToString(i),
+                KH_CONTROLLER,
+                pos,
+                head,
+                KH_COMMRANGE,
+                KH_DATASIZE);
         /* Add it to the simulation */
         AddEntity(*pcRobot);
         /* Add it to the internal lists */
         m_vecKheperas.push_back(pcRobot);
         m_vecControllers.push_back(
-            &dynamic_cast<CBuzzController &>(
-                pcRobot->GetControllableEntity().GetController()));
+
+                &dynamic_cast<CBuzzController &>(
+                        pcRobot->GetControllableEntity().GetController()));
+
 
         SInitSetup str;
         str.Position = pos;
@@ -502,6 +587,25 @@ void CMPGAEmergentBehaviorLoopFunctions::printErr(std::string in) {
     LOGERR.Flush();
 }
 
+void CMPGAEmergentBehaviorLoopFunctions::PrintExperiment(std::string filename, int currentTick,
+                                                         std::vector<float> m_vecRobotX, std::vector<float> m_vecRobotY,
+                                                         std::vector<int> m_vecRobotState,
+                                                         std::vector<int> m_vecRobotReading,
+                                                         std::vector<float> m_vecRobotSpeed) {
+
+    unsigned long size = m_vecRobotX.size();
+
+    std::ofstream experimentFile(filename, std::ios::out | std::ios::app);
+
+    for (int i = 0; i < size; ++i) {
+        experimentFile << currentTick << "," << i << "," << m_vecRobotX[i] << "," << m_vecRobotY[i] << ","
+                       << m_vecRobotState[i]
+                       << "," << m_vecRobotReading[i] << "," << m_vecRobotSpeed[i] << std::endl;
+    }
+
+    experimentFile.close();
+
+}
 
 //Register the loop functions so buzz and ARGoS can find it
 REGISTER_LOOP_FUNCTIONS(CMPGAEmergentBehaviorLoopFunctions, "mpga_emergent_behavior_loop_functions")

@@ -35,11 +35,11 @@
  */
 static const size_t GENOME_SIZE = 18;
 
-const Real KHEPERAIV_BASE_RADIUS    = 0.0704;
-static const std::string KH_CONTROLLER      = "ebc";
-static const Real        KH_COMMRANGE       = 10. ;
-static const UInt32      KH_DATASIZE        = 300;
-static const Real        KH_INIT_DISTANCE   = 2 * KHEPERAIV_BASE_RADIUS * 0.01;
+const Real KHEPERAIV_BASE_RADIUS = 0.0704;
+static const std::string KH_CONTROLLER = "ebc";
+static const Real KH_COMMRANGE = 10.;
+static const UInt32 KH_DATASIZE = 300;
+static const Real KH_INIT_DISTANCE = 2 * KHEPERAIV_BASE_RADIUS * 0.01;
 
 /****************************************/
 /****************************************/
@@ -60,6 +60,8 @@ public:
 
     virtual void PreStep();
 
+    virtual void PostStep();
+
     /* Configures the robot controller from the genome */
     virtual void ConfigureFromGenome(const Real *pf_genome);
 
@@ -70,12 +72,14 @@ private:
 
     void CreateRobots(UInt32 un_robots);
 
-    void printErr(std::string in);
+    void PrintExperiment(std::string filename, int currentTick,
+                         std::vector<float> m_vecRobotX,
+                         std::vector<float> m_vecRobotY,
+                         std::vector<int> m_vecRobotState,
+                         std::vector<int> m_vecRobotReading,
+                         std::vector<float> m_vecRobotSpeed);
 
-    CAnalysis::AnalysisResults AnalyzeSwarm(int swarmID, const std::vector<float> &vecRobotX, const std::vector<float> &vecRobotY,
-                                             const std::vector<float> &vecRobotZ, const std::vector<float> &vecRobotSpeed,
-                                             const std::vector<int> &vecRobotState, const std::vector<float> &vecAvgRobotState0,
-                                             const std::vector<float> &vecAvgRobotState1);
+    void printErr(std::string in);
 
     
 
@@ -86,8 +90,8 @@ private:
     };
 
     std::vector<SInitSetup> m_vecInitSetup;
-    std::vector<CKheperaIVEntity*> m_vecKheperas;
-    std::vector<CBuzzController*> m_vecControllers;
+    std::vector<CKheperaIVEntity *> m_vecKheperas;
+    std::vector<CBuzzController *> m_vecControllers;
     std::vector<Real> m_pfControllerParams;
     CRandom::CRNG *m_pcRNG;
 
