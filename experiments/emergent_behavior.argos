@@ -45,10 +45,8 @@
     <!-- * Loop functions * -->
     <!-- ****************** -->
 
-    <!-- library="/home/cpinciroli/Emergent-Behavior-From-Changeable-Internal-State/build/loop_functions/libmpga_emergent_behavior_loop_functions.so" -->
-
     <loop_functions
-            library="/home/djcupo/Documents/NESTLab/Emergent-Behavior-From-Changeable-Internal-State/bin/loop_functions/libmpga_emergent_behavior_loop_functions.so"
+            library="/home/cpinciroli/Emergent-Behavior-From-Changeable-Internal-State/build/loop_functions/libmpga_emergent_behavior_loop_functions.so"
             
             label="mpga_emergent_behavior_loop_functions"
             num_robots="15">
