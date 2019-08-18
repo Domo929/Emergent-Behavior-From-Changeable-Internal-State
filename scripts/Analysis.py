@@ -256,6 +256,7 @@ def main():
 		entropy0 = Entropy(probMap0)
 		print('The Entropy for State = 0 is: '+str(entropy0))
 		print('The Entropy for State = 1 is: '+str(entropy1))
+		
 		numRobots = FindNumberRobots(data)
 		changeFrequency = StateChangeFrequency(numRobots, data)
 		print('The State change frequency is: ' + str(changeFrequency))

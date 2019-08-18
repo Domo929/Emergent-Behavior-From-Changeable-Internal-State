@@ -15,11 +15,13 @@ CAnalysis::AnalysisResults CAnalysis::AnalyzeAll() {
     AnalyzeState();
 
     results.Scatter = this->scatter;
+    results.CentroidX = this->centroidX;
+    results.CentroidY = this->centroidY;
     results.RadialVariance = this->radialVariance;
     results.Speed = this->speed;
     results.AngularMomentum = this->angMomentum;
     results.GroupRotation = this->groupRotation;
-    results.StateZeroCount = this->state0Count;
+    results.StateChangeFreq = this->stateChangeFreq;
 
     return results;
 }
@@ -68,7 +70,7 @@ void CAnalysis::AnalyzeSpeed() {
 
 void CAnalysis::AnalyzeAngMomentum() {
     std::vector<float> vecCrossProd;
-    for(int i = 0; i < m_vecRobotX.size(); ++i){
+    for(int i = 0; i < m_vecRobotX.size(); ++i) {
         float x_pos = m_vecRobotX[i];
         float y_pos = m_vecRobotY[i];
 
@@ -88,7 +90,7 @@ void CAnalysis::AnalyzeAngMomentum() {
 
 void CAnalysis::AnalyzeGroupRotation() {
     std::vector<float> vecCrossProd;
-    for(int i = 0; i < m_vecRobotX.size(); ++i){
+    for(int i = 0; i < m_vecRobotX.size(); ++i) {
         float x_pos = m_vecRobotX[i];
         float y_pos = m_vecRobotY[i];
 
@@ -116,9 +118,9 @@ void CAnalysis::AnalyzeState() {
 
     int counter = 0;
     for (int i = 0; i < size; ++i) {
-        if (m_vecRobotState[i] == 0){
+        if (m_vecRobotState[i] == 0) {
             counter++;
         }
     }
-    state0Count = counter;
+    stateChangeFreq = (float) counter / size;
 }
