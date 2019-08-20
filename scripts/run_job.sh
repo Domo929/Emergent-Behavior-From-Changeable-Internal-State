@@ -107,4 +107,4 @@ mkdir data_${THISJOB}
 mv *.csv data_${THISJOB}/
 zip data_${THISJOB}.zip data_${THISJOB}/*
 
-cp -a data_${THISJOB}.zip ${DATADIR}
+cp data_${THISJOB}.zip ${DATADIR}
