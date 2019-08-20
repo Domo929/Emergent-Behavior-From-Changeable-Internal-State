@@ -72,14 +72,24 @@ private:
 
     void CreateRobots(UInt32 un_robots);
 
+    CAnalysis::AnalysisResults AnalyzeSwarm(int swarmID,
+        const std::vector<float> &vecRobotX,
+        const std::vector<float> &vecRobotY,
+        const std::vector<float> &vecRobotZ,
+        const std::vector<float> &vecRobotSpeed,
+        const std::vector<int> &vecRobotState);
+
     void PrintExperiment(std::string filename, int currentTick,
                          std::vector<float> m_vecRobotX,
                          std::vector<float> m_vecRobotY,
+                         std::vector<float> m_vecRobotZ,
                          std::vector<int> m_vecRobotState,
                          std::vector<int> m_vecRobotReading,
                          std::vector<float> m_vecRobotSpeed);
 
     void printErr(std::string in);
+
+
 
     /* The initial setup of a trial */
     struct SInitSetup {

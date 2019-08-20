@@ -83,12 +83,28 @@ void FlushNamesToMasterFile() {
                         "s'21" << "," <<
                         "vl21" << "," <<
                         "vr21" << "," <<
-                        "scatter" << "," <<
-                        "radialVar" << "," <<
-                        "speed" << "," <<
-                        "angMom" << "," <<
-                        "grpRot" << "," <<
-                        "state0" << "," <<
+                        "full_cent_x" << "," <<
+                        "full_cent_y" << "," <<
+                        "full_scatter" << "," <<
+                        "full_radialVar" << "," <<
+                        "full_speed" << "," <<
+                        "full_angMom" << "," <<
+                        "full_grpRot" << "," <<
+                        "full_state_change_freq" << "," <<
+                        "0_cent_x" << "," <<
+                        "0_cent_y" << "," <<
+                        "0_scatter" << "," <<
+                        "0_radialVar" << "," <<
+                        "0_speed" << "," <<
+                        "0_angMom" << "," <<
+                        "0_grpRot" << "," <<
+                        "1_cent_x" << "," <<
+                        "1_cent_y" << "," <<
+                        "1_scatter" << "," <<
+                        "1_radialVar" << "," <<
+                        "1_speed" << "," <<
+                        "1_angMom" << "," <<
+                        "1_grpRot" << "," <<
                         "Score" << "," <<
                         "ExpID" << std::endl;
 
@@ -135,6 +151,9 @@ int main(int argc, char *argv[]) {
     }
     LOG << std::endl;
     LOG.Flush();
+
+    bool first = true;
+    
     while (!cGA.Done()) {
         cGA.NextGen();
         cGA.Evaluate();
@@ -151,9 +170,18 @@ int main(int argc, char *argv[]) {
 //            argos::LOG << "done.]";
 //        }
         LOG << std::endl;
-        argos::LOG << "Flushing scores to master file" << std::endl;
+        LOG.Flush();
+
         FlushToMasterFile(cGA.getSlavePIDs(), randSeed, cGA.m_unCurrentGeneration);
-        RenameExperiments(cGA.getSlavePIDs(), randSeed, cGA.m_unCurrentGeneration);
+
+        if(first) {
+            RenameExperiments(cGA.getSlavePIDs(), randSeed, 0);    
+        } else {
+            first = false;
+            RenameExperiments(cGA.getSlavePIDs(), randSeed, cGA.m_unCurrentGeneration);    
+        }
+
+        
         LOG.Flush();
     }
     return 0;

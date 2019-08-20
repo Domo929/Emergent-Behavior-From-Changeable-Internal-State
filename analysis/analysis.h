@@ -25,7 +25,7 @@ public:
         speed = -9.9f;
         angMomentum = -9.9f;
         groupRotation = -9.9f;
-        state0Count = -9;
+        stateChangeFreq = -9.9;
         centroidX = -9.9f;
         centroidY = -9.9f;
     }
@@ -34,12 +34,14 @@ public:
 
     typedef struct {
         int size = 6;
+        float CentroidX = 0.0;
+        float CentroidY = 0.0;
         float Scatter = 0.0;
         float RadialVariance = 0.0;
         float Speed = 0.0;
         float AngularMomentum = 0.0;
         float GroupRotation = 0.0;
-        int StateZeroCount = 0;
+        float StateChangeFreq = 0;
     } AnalysisResults;
 
     AnalysisResults AnalyzeAll();
@@ -56,7 +58,7 @@ private:
     float speed;
     float angMomentum;
     float groupRotation;
-    int state0Count;
+    float stateChangeFreq;
 
     float arenaSize = 3.535;
 
