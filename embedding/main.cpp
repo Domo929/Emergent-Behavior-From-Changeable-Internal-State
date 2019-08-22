@@ -134,11 +134,11 @@ int main(int argc, char *argv[]) {
     CMPGA cGA(CRange<Real>(0, 10.0),                    // Allele range
               GENOME_SIZE,                              // Genome size
               8, //change this to number of cores       // Population size
-              0.05,                                     // Mutation probability
+              0.1,                                     // Mutation probability
               1,                                        // Number of trials
-              1000, //make this not two                    // Number of generations
+              100, //make this not two                    // Number of generations
               true,                                     // Maximize score (False will minimize score)
-              "experiments/emergent_behavior.argos",    // .argos conf file
+              "/home/djcupo/Emergent-Behavior-From-Changeable-Internal-State/experiments/emergent_behavior.argos",    // .argos conf file
               &ScoreAggregator,                         // The score aggregator
               randSeed                                  // Random seed
     );
@@ -175,9 +175,9 @@ int main(int argc, char *argv[]) {
         FlushToMasterFile(cGA.getSlavePIDs(), randSeed, cGA.m_unCurrentGeneration);
 
         if(first) {
+            first = false;
             RenameExperiments(cGA.getSlavePIDs(), randSeed, 0);    
         } else {
-            first = false;
             RenameExperiments(cGA.getSlavePIDs(), randSeed, cGA.m_unCurrentGeneration);    
         }
 
