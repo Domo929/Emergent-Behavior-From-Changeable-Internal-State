@@ -136,7 +136,7 @@ int main(int argc, char *argv[]) {
               8, //change this to number of cores       // Population size
               0.1,                                     // Mutation probability
               1,                                        // Number of trials
-              100, //make this not two                    // Number of generations
+              1000, //make this not two                    // Number of generations
               true,                                     // Maximize score (False will minimize score)
               "/home/djcupo/Emergent-Behavior-From-Changeable-Internal-State/experiments/emergent_behavior.argos",    // .argos conf file
               &ScoreAggregator,                         // The score aggregator

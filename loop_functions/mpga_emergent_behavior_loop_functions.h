@@ -89,7 +89,7 @@ private:
 
     void printErr(std::string in);
 
-
+    double handlenan(double d);
 
     /* The initial setup of a trial */
     struct SInitSetup {

@@ -396,7 +396,7 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
     //Variables for reference later
     std::string line;
     Real minDistance = 999999999999;
-    // printErr("Started Scoring");
+    bool needMinDist = true;
 
     //This makes sure we ignore the first value, which are the names of the csv columns
     bool skipped = false;
@@ -447,7 +447,7 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
 
                 //Find the distance from basic Pythagorean method. Dist is the score
 
-                Real dist = sqrt(
+                Real dist1 = sqrt(handlenan(
                                 pow(comp_full_centroid_x - fullSwarmResults.CentroidX, 2) +
                                 pow(comp_full_centroid_y - fullSwarmResults.CentroidY, 2) +
                                 pow(comp_full_scatter - fullSwarmResults.Scatter, 2) +
@@ -455,28 +455,36 @@ Real CMPGAEmergentBehaviorLoopFunctions::Score() {
                                 pow(comp_full_speed - fullSwarmResults.Speed, 2) +
                                 pow(comp_full_angMomentum - fullSwarmResults.AngularMomentum, 2) +
                                 pow(comp_full_groupRotation - fullSwarmResults.GroupRotation, 2) +
-                                pow(comp_full_state_freq - fullSwarmResults.StateChangeFreq, 2) +
-                
+                                pow(comp_full_state_freq - fullSwarmResults.StateChangeFreq, 2)));
 
+                Real dist2 = sqrt(handlenan(
                                 pow(comp_swarm0_centroid_x - swarm0Results.CentroidX, 2) +
                                 pow(comp_swarm0_centroid_y - swarm0Results.CentroidY, 2) +
                                 pow(comp_swarm0_scatter - swarm0Results.Scatter, 2) +
                                 pow(comp_swarm0_variance - swarm0Results.RadialVariance, 2) +
                                 pow(comp_swarm0_speed - swarm0Results.Speed, 2) +
                                 pow(comp_swarm0_angMomentum - swarm0Results.AngularMomentum, 2) +
-                                pow(comp_swarm0_groupRotation - swarm0Results.GroupRotation, 2) +
+                                pow(comp_swarm0_groupRotation - swarm0Results.GroupRotation, 2)));
 
-
+                Real dist3 = sqrt(handlenan(
                                 pow(comp_swarm1_centroid_x - swarm1Results.CentroidX, 2) +
                                 pow(comp_swarm1_centroid_y - swarm1Results.CentroidY, 2) +
                                 pow(comp_swarm1_scatter - swarm1Results.Scatter, 2) +
                                 pow(comp_swarm1_variance - swarm1Results.RadialVariance, 2) +
                                 pow(comp_swarm1_speed - swarm1Results.Speed, 2) +
                                 pow(comp_swarm1_angMomentum - swarm1Results.AngularMomentum, 2) +
-                                pow(comp_swarm1_groupRotation - swarm1Results.GroupRotation, 2));
+                                pow(comp_swarm1_groupRotation - swarm1Results.GroupRotation, 2)));
 
+                Real dist = dist1 + dist2 + dist3;
 
-                dist *= (Real) 1000000;
+                if(isnan(dist)){
+                    dist = 0.0;
+                }
+
+                if (needMinDist) {
+                    needMinDist = false;
+                    minDistance = dist;
+                }
 
                 //We want to find the shortest distance
                 if (dist < minDistance) {
@@ -624,6 +632,14 @@ void CMPGAEmergentBehaviorLoopFunctions::PrintExperiment(std::string filename, i
 
     experimentFile.close();
 
+}
+
+double CMPGAEmergentBehaviorLoopFunctions::handlenan(double d){
+    if (isnan(d))
+    {
+        return 0.0;
+    }
+    return d;
 }
 
 //Register the loop functions so buzz and ARGoS can find it
