@@ -111,10 +111,10 @@
     <!-- ****************** -->
     <!-- * Visualization * -->
     <!-- ****************** -->
-    <!--<visualization>-->
-        <!--<qt-opengl>-->
-            <!--<user_functions label="buzz_qt"/>-->
-        <!--</qt-opengl>-->
-    <!--</visualization>-->
+    <visualization>
+        <qt-opengl>
+            <user_functions label="buzz_qt"/>
+        </qt-opengl>
+    </visualization>
 
 </argos-configuration>
