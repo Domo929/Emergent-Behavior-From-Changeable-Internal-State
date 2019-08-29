@@ -32,7 +32,7 @@ struct PutGenome : public CBuzzLoopFunctions::COperation {
     explicit PutGenome(const std::vector<double> &vec_genome) : m_vecGenome(vec_genome) {}
 
     /** The action happens here */
-    virtual void operator()(const std::string str_robot_id,
+    virtual void operator()(const std::string& str_robot_id,
                               buzzvm_t t_vm) {
         /* Set the values of the table 'genome' in the Buzz VM */
         BuzzTableOpen(t_vm, "genome");
@@ -60,7 +60,7 @@ struct GetFinalRobotData : public CBuzzLoopFunctions::COperation {
     GetFinalRobotData(int t) : temp(t) {}
 
     /** The action happens here */
-    virtual void operator()(const std::string str_robot_id,
+    virtual void operator()(const std::string& str_robot_id,
                               buzzvm_t t_vm) {
 
         // get the buzzobj corresponding to the value we want
@@ -149,7 +149,7 @@ struct GetStepRobotData : public CBuzzLoopFunctions::COperation {
     GetStepRobotData(int t) : temp(t) {}
 
     /** The action happens here */
-    virtual void operator()(const std::string str_robot_id,
+    virtual void operator()(const std::string& str_robot_id,
                             buzzvm_t t_vm) {
 
         // get the buzzobj corresponding to the value we want
@@ -272,8 +272,8 @@ void CMPGAEmergentBehaviorLoopFunctions::Init(TConfigurationNode &t_node) {
 /****************************************/
 //For whatever reason, if you don't put the genome back each time step, it defaults back to the 0.0 defaults.
 void CMPGAEmergentBehaviorLoopFunctions::PreStep() {
-    // PutGenome cPutGenome(m_pfControllerParams);
-    // BuzzForeachVM(cPutGenome);
+    PutGenome cPutGenome(m_pfControllerParams);
+    BuzzForeachVM(cPutGenome);
 }
 /****************************************/
 /****************************************/
