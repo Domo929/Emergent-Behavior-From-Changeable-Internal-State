@@ -6,6 +6,7 @@
 
 /* ARGoS-related headers */
 #include <argos3/core/utility/math/rng.h>
+#include <argos3/core/utility/math/range.h>
 #include <argos3/plugins/robots/foot-bot/simulator/footbot_entity.h>
 #include <argos3/plugins/robots/kheperaiv/simulator/kheperaiv_entity.h>
 #include <argos3/plugins/robots/kheperaiv/simulator/kheperaiv_measures.h>

@@ -32,8 +32,8 @@ struct PutGenome : public CBuzzLoopFunctions::COperation {
     explicit PutGenome(const std::vector<double> &vec_genome) : m_vecGenome(vec_genome) {}
 
     /** The action happens here */
-    virtual void operator()(const std::string &str_robot_id,
-                            buzzvm_t t_vm) {
+    virtual void operator()(const std::string str_robot_id,
+                              buzzvm_t t_vm) {
         /* Set the values of the table 'genome' in the Buzz VM */
         BuzzTableOpen(t_vm, "genome");
         for (int i = 0; i < m_vecGenome.size(); ++i) {
@@ -60,8 +60,8 @@ struct GetFinalRobotData : public CBuzzLoopFunctions::COperation {
     GetFinalRobotData(int t) : temp(t) {}
 
     /** The action happens here */
-    virtual void operator()(const std::string &str_robot_id,
-                            buzzvm_t t_vm) {
+    virtual void operator()(const std::string str_robot_id,
+                              buzzvm_t t_vm) {
 
         // get the buzzobj corresponding to the value we want
         buzzobj_t tCurX = BuzzGet(t_vm, "cur_x");
@@ -149,7 +149,7 @@ struct GetStepRobotData : public CBuzzLoopFunctions::COperation {
     GetStepRobotData(int t) : temp(t) {}
 
     /** The action happens here */
-    virtual void operator()(const std::string &str_robot_id,
+    virtual void operator()(const std::string str_robot_id,
                             buzzvm_t t_vm) {
 
         // get the buzzobj corresponding to the value we want
@@ -266,40 +266,14 @@ void CMPGAEmergentBehaviorLoopFunctions::Init(TConfigurationNode &t_node) {
     // printErr("Fiished INIT");
 }
 
-/****************************************/
-/****************************************/
 
-void CMPGAEmergentBehaviorLoopFunctions::Reset() {
-    /*
-     * Move robot to the initial position corresponding to the current trial
-     */
-    // printErr("Started Reset");
-
-    //For each robot, check to see if it moved, if it had, put it back. IF it errors out, print the robot and where we tried to move it to
-    for(size_t i = 0; i < m_vecKheperas.size(); i++) {
-        if(!MoveEntity(
-                    m_vecKheperas[i]->GetEmbodiedEntity(),        //Move this robot
-                    m_vecInitSetup[i].Position,          // with this position
-                    m_vecInitSetup[i].Orientation,       // with this orientation
-                    false                                         // this is not a check, so actually move the robot back
-                )) {
-            LOGERR << "Can't move robot kh(" << i << ") in <"
-                   << m_vecInitSetup[i].Position
-                   << ">, <"
-                   << m_vecInitSetup[i].Orientation
-                   << ">"
-                   << std::endl;
-        }
-    }
-    // printErr("Finished Reset");
-}
 
 /****************************************/
 /****************************************/
 //For whatever reason, if you don't put the genome back each time step, it defaults back to the 0.0 defaults.
 void CMPGAEmergentBehaviorLoopFunctions::PreStep() {
-    PutGenome cPutGenome(m_pfControllerParams);
-    BuzzForeachVM(cPutGenome);
+    // PutGenome cPutGenome(m_pfControllerParams);
+    // BuzzForeachVM(cPutGenome);
 }
 /****************************************/
 /****************************************/
@@ -564,11 +538,21 @@ void CMPGAEmergentBehaviorLoopFunctions::CreateRobots(UInt32 un_robots) {
 
     //for each robot, calculate the position based on spherical coordinates
     for (size_t i = 0; i < un_robots; ++i) {
+        CRange<Real> distRange;
+        distRange.SetMin(0);
+        distRange.SetMax(1.5);
+        Real dist = m_pcRNG->Uniform(distRange);
+        CRadians posAng = m_pcRNG->Uniform(CRadians::UNSIGNED_RANGE);
         CVector3 pos;
         pos.FromSphericalCoords(
-            2.0f,
-            CRadians::PI_OVER_TWO,
-            CRadians(i * robStep));
+          dist,
+          CRadians::PI_OVER_TWO,
+          posAng
+        );
+        // pos.FromSphericalCoords(
+        //     2.0f,
+        //     CRadians::PI_OVER_TWO,
+        //     CRadians(i * robStep));
         //Make sure they're on the ground, otherwise it breaks
         pos.SetZ(0.0);
 
@@ -604,6 +588,34 @@ void CMPGAEmergentBehaviorLoopFunctions::CreateRobots(UInt32 un_robots) {
         m_vecInitSetup.push_back(str);
     }
     BuzzRegisterVMs();
+}
+
+/****************************************/
+/****************************************/
+
+void CMPGAEmergentBehaviorLoopFunctions::Reset() {
+    /*
+     * Move robot to the initial position corresponding to the current trial
+     */
+    // printErr("Started Reset");
+
+    //For each robot, check to see if it moved, if it had, put it back. IF it errors out, print the robot and where we tried to move it to
+    for(size_t i = 0; i < m_vecKheperas.size(); i++) {
+        if(!MoveEntity(
+                    m_vecKheperas[i]->GetEmbodiedEntity(),        //Move this robot
+                    m_vecInitSetup[i].Position,          // with this position
+                    m_vecInitSetup[i].Orientation,       // with this orientation
+                    false                                         // this is not a check, so actually move the robot back
+                )) {
+            LOGERR << "Can't move robot kh(" << i << ") in <"
+                   << m_vecInitSetup[i].Position
+                   << ">, <"
+                   << m_vecInitSetup[i].Orientation
+                   << ">"
+                   << std::endl;
+        }
+    }
+    // printErr("Finished Reset");
 }
 
 //Easy wrapper for printing to the error log so when you get a "Blah failed. Check ARGoS_LOGERR_#### there's actually something useful there"
