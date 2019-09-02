@@ -4,6 +4,13 @@
 
 #include "analysis.h"
 
+float handleNaN(float in) {
+  if (isnan(in)) {
+    return 0;
+  }
+  return in;
+}
+
 CAnalysis::AnalysisResults CAnalysis::AnalyzeAll() {
     AnalysisResults results;
 
@@ -14,14 +21,14 @@ CAnalysis::AnalysisResults CAnalysis::AnalyzeAll() {
     AnalyzeAngMomentum();
     AnalyzeState();
 
-    results.Scatter = this->scatter;
-    results.CentroidX = this->centroidX;
-    results.CentroidY = this->centroidY;
-    results.RadialVariance = this->radialVariance;
-    results.Speed = this->speed;
-    results.AngularMomentum = this->angMomentum;
-    results.GroupRotation = this->groupRotation;
-    results.StateChangeFreq = this->stateChangeFreq;
+    results.Scatter = handleNaN(this->scatter);
+    results.CentroidX = handleNaN(this->centroidX);
+    results.CentroidY = handleNaN(this->centroidY);
+    results.RadialVariance = handleNaN(this->radialVariance);
+    results.Speed = handleNaN(this->speed);
+    results.AngularMomentum = handleNaN(this->angMomentum);
+    results.GroupRotation = handleNaN(this->groupRotation);
+    results.StateChangeFreq = handleNaN(this->stateChangeFreq);
 
     return results;
 }

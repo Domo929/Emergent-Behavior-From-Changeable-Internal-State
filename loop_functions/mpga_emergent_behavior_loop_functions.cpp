@@ -344,31 +344,66 @@ CAnalysis::AnalysisResults CMPGAEmergentBehaviorLoopFunctions::AnalyzeSwarm(int 
 /****************************************/
 
 //Oh buddy
+//it's been 4 months since I wrote this comment, and it's even more relevant now than then
 Real CMPGAEmergentBehaviorLoopFunctions::Score() {
-    // printErr("Started Score");
-    //Get the robot data
-    GetFinalRobotData cGetRobotData(0);
-    BuzzForeachVM(cGetRobotData);
-    // printErr("Finished Get data");
+    std::vector<float> m_vecRobotX;
+    std::vector<float> m_vecRobotY;
+    std::vector<float> m_vecRobotZ;
+    std::vector<int> m_vecRobotState;
+    std::vector<int> m_vecRobotReading;
+    std::vector<float> m_vecRobotSpeed;
 
+    std::ifstream experimentFile(std::string("experiment_" + ToString(::getpid()) + ".csv"), std::ios::in);
+    std::string line;
+
+    if(experimentFile.is_open()) {
+        unsigned long counter = 0;
+        while (getline(experimentFile, line)) {
+          if (counter >= 1200) {
+            double robot[8]; //time, rid, X, Y, Z, State, Reading, Speed
+            //Parse the line and store the values in scores array
+            ParseValues(line, (UInt32) 8, robot, ',');
+            m_vecRobotX.push_back((float) robot[2]);
+            m_vecRobotY.push_back((float) robot[3]);
+            m_vecRobotZ.push_back((float) robot[4]);
+            m_vecRobotState.push_back((int) robot[5]);
+            m_vecRobotReading.push_back((int) robot[6]);
+            m_vecRobotSpeed.push_back((float) robot[7]);
+          }
+
+          counter++;
+        }
+    } else {
+      return 0.0;
+    }
+
+    experimentFile.close();
+
+    // cGetStepRobotData.currentTick,
+    //RID
+    //                 cGetStepRobotData.m_vecRobotX,
+     // cGetStepRobotData.m_vecRobotY,
+    //                 cGetStepRobotData.m_vecRobotZ,
+    //                 cGetStepRobotData.m_vecRobotState,
+    // cGetStepRobotData.m_vecRobotReading,
+    //                 cGetStepRobotData.m_vecRobotSpeed
     //Create the Analysis class, with the vectors from the data
-    CAnalysis fullSwarmAnalysis(cGetRobotData.m_vecRobotX, cGetRobotData.m_vecRobotY, cGetRobotData.m_vecRobotZ,
-                                cGetRobotData.m_vecRobotSpeed, cGetRobotData.m_vecRobotState);
+    CAnalysis fullSwarmAnalysis(m_vecRobotX, m_vecRobotY, m_vecRobotZ,
+                                m_vecRobotSpeed, m_vecRobotState);
 
 
     //Analyze all, and save the results in a struct that has each value.
     CAnalysis::AnalysisResults fullSwarmResults = fullSwarmAnalysis.AnalyzeAll();
 
-    CAnalysis::AnalysisResults swarm0Results = AnalyzeSwarm(0, cGetRobotData.m_vecRobotX, cGetRobotData.m_vecRobotY, cGetRobotData.m_vecRobotZ,
-            cGetRobotData.m_vecRobotSpeed, cGetRobotData.m_vecRobotState);
+    CAnalysis::AnalysisResults swarm0Results = AnalyzeSwarm(0, m_vecRobotX, m_vecRobotY, m_vecRobotZ,
+            m_vecRobotSpeed, m_vecRobotState);
 
-    CAnalysis::AnalysisResults swarm1Results = AnalyzeSwarm(1, cGetRobotData.m_vecRobotX, cGetRobotData.m_vecRobotY, cGetRobotData.m_vecRobotZ,
-            cGetRobotData.m_vecRobotSpeed, cGetRobotData.m_vecRobotState);
+    CAnalysis::AnalysisResults swarm1Results = AnalyzeSwarm(1, m_vecRobotX, m_vecRobotY, m_vecRobotZ,
+            m_vecRobotSpeed, m_vecRobotState);
     //Open the master file as READ-ONLY. This is important, you can open a file from multiple locations read only, but if you try to open it to write things get fucky. Don't let them get fucky.
     std::ifstream score_files("master_scores.csv", std::ios::in);
 
     //Variables for reference later
-    std::string line;
     Real minDistance = 999999999999;
     bool needMinDist = true;
 
@@ -539,22 +574,24 @@ void CMPGAEmergentBehaviorLoopFunctions::CreateRobots(UInt32 un_robots) {
     //for each robot, calculate the position based on spherical coordinates
     for (size_t i = 0; i < un_robots; ++i) {
         CRange<Real> distRange;
-        distRange.SetMin(0);
+        distRange.SetMin(-1.5);
         distRange.SetMax(1.5);
-        Real dist = m_pcRNG->Uniform(distRange);
-        CRadians posAng = m_pcRNG->Uniform(CRadians::UNSIGNED_RANGE);
-        CVector3 pos;
-        pos.FromSphericalCoords(
-          dist,
-          CRadians::PI_OVER_TWO,
-          posAng
-        );
+        Real dist_x = m_pcRNG->Uniform(distRange);
+        Real dist_y = m_pcRNG->Uniform(distRange);
+        // CRadians posAng = m_pcRNG->Uniform(CRadians::UNSIGNED_RANGE);
+        CVector3 pos = CVector3(dist_x, dist_y, 0.0);
         // pos.FromSphericalCoords(
-        //     2.0f,
+        //   dist,
+        //   CRadians::PI_OVER_TWO,
+        //   posAng
+        // );
+        // pos.FromSphericalCoords(
+        //     1.5f,
         //     CRadians::PI_OVER_TWO,
-        //     CRadians(i * robStep));
+        //     CRadians(i * robStep)
+        //   );
         //Make sure they're on the ground, otherwise it breaks
-        pos.SetZ(0.0);
+        // pos.SetZ(0.0);
 
         //Randomly choose the starting orientation
         CQuaternion head;

@@ -40,6 +40,7 @@ build/
 build-debug
 build-release
 .idea/
+results/
 
 *.csv
 *.dat

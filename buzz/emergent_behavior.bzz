@@ -1,5 +1,5 @@
 
-#Sensor width in degrees. 5 deg is the default as per the orignal papers choice
+#Sensor width in degrees. 5 deg is the default as per the original papers choice
 SEN_APERTURE_DEG = 5.0
 
 #Converts the chosen angle into radians and divides it in half. This is because we are checking +/- half the distance on either side of the robots heading
@@ -49,7 +49,7 @@ function init() {
 	cur_z = pose.orientation.yaw
 	cur_s = CUR_STATE
 	cur_r = 0
-	cur_speed = 0
+	cur_speed = 0.0
 }
 
 
@@ -57,47 +57,45 @@ function step() {
     #printGenome()
 
     #Broadcasts the robots current state for the sensor
-	neighbors.broadcast("state", CUR_STATE)
-
-	# gets the current sensor reading
-	var reading = sensor()
-
-	PST_STATE = CUR_STATE
-
-	# state machine to set wheels speeds and new state depending on current state and reading
-	if (CUR_STATE == 0) {
-		if(reading == 0) {
-		    CUR_STATE = genomeToState(genome[0])
-			set_wheels(genome[1], genome[2])
-			speed = calcSpeed(genome[1], genome[2])
-		} else if (reading == 1) {
-			CUR_STATE = genomeToState(genome[6])
+    neighbors.broadcast("state", CUR_STATE)
+    # gets the current sensor reading
+    reading = sensor()
+    PST_STATE = CUR_STATE
+    # state machine to set wheels speeds and new state depending on current state and reading
+    if (CUR_STATE == 0) {
+        if(reading == 0) {
+            CUR_STATE = genomeToState(genome[0])
+            set_wheels(genome[1], genome[2])
+            speed = calcSpeed(genome[1], genome[2])
+        } else if (reading == 1) {
+            CUR_STATE = genomeToState(genome[6])
             set_wheels(genome[7], genome[8])
             speed = calcSpeed(genome[7], genome[8])
-		} else {
-			CUR_STATE = genomeToState(genome[12])
+        } else {
+            CUR_STATE = genomeToState(genome[12])
             set_wheels(genome[13], genome[14])
             speed = calcSpeed(genome[13], genome[14])
-		}
-	} else { #CUR_STATE == 1
-		if(reading == 0) {
-			CUR_STATE = genomeToState(genome[3])
+        }
+    } else { #CUR_STATE == 1
+        if(reading == 0) {
+            CUR_STATE = genomeToState(genome[3])
             set_wheels(genome[4], genome[5])
             speed = calcSpeed(genome[4], genome[5])
-		} else if (reading == 1) {
-			CUR_STATE = genomeToState(genome[9])
+        } else if (reading == 1) {
+            CUR_STATE = genomeToState(genome[9])
             set_wheels(genome[10], genome[11])
             speed = calcSpeed(genome[10], genome[11])
-		} else {
-			CUR_STATE = genomeToState(genome[15])
+        } else {
+            CUR_STATE = genomeToState(genome[15])
             set_wheels(genome[16], genome[17])
             speed = calcSpeed(genome[16], genome[17])
-		}
-	}
-	updateLEDS()
-	# updates the internal fields for the loop functions at the end
+        }
+    }
+    updateLEDS()
+    # updates the internal fields for the loop functions at the end
     updateFields(reading)
-	tick = tick + 1
+    tick = tick + 1
+    t = {}
 }
 
 # This just handles the 0.0 - 10.0 --> 0, 1 conversion from genome to state
@@ -120,57 +118,55 @@ function printGenome(){
 
 #Calculates the reading from current inputs. More description internal
 function sensor(){
+    #closest_*** are initialized to a very high distance, and impossible robot id so that the checks have a valid value to compare against
+    closest_dist = 2*SEN_DIST_CM
+    closest_rid = -1
+    # we check each neighbor
+    neighbors.foreach(
+        function(rid, data){
+            # First we check that the neighbor is within the simulated range
+            if (data.distance < SEN_DIST_CM) {
+                # Then we check if the neighbor is within the width of our simulated sensor
+                if ((data.azimuth > -SEN_APERTURE_SPLIT_RAD) and (data.azimuth < SEN_APERTURE_SPLIT_RAD)) {
+                    # Then if we have multiple possible choices, we keep saving the closest
+                    if (data.distance < closest_dist) {
+                        closest_dist = data.distance
+                        closest_rid = rid
+                    }
+                }
+            }
+        })
+    # we check the state of the closest robot
+    if(closest_rid == -1){
+        return 0
+    }
+    else{
+        if (t[closest_rid] == CUR_STATE){
+            return 1
+        }
+        else {
+            return 2
+        }
+    }
 
-	#closest_*** are iniitlized to a very high distance, and impossible robot id so that the checks have a valid value to compare against
-	closest_dist = 2*SEN_DIST_CM
-	closest_rid = -1
-
-	# we check each neighbor
-	neighbors.foreach(
-		function(rid, data){
-			# First we check that the neighbor is within the simulated range
-			if (data.distance < SEN_DIST_CM) {
-
-				# Then we check if the neighbor is within the width of our simulated sensor
-				if ((data.azimuth > -SEN_APERTURE_SPLIT_RAD) and (data.azimuth < SEN_APERTURE_SPLIT_RAD)) {
-
-					# Then if we have multiple possible choices, we keep saving the closest
-					if (data.distance < closest_dist) {
-						closest_dist = data.distance
-						closest_rid = rid
-					}
-				}
-			}
-		})
-	# we check the state of the closest robot
-	var target_state = -1
-	neighbors.listen("state",
-		function(vid, value, rid){
-			if (rid == closest_rid) {
-				target_state = value
-			}
-		})
-
-	# state machine to determine the 0, 1, 2 return of the sensor depending on whether the states match
-	if (closest_rid == -1) {
-		return 0
-	} else if (target_state == CUR_STATE) {
-		return 1
-	} else {
-		return 2
-	}
-
+    # state machine to determine the 0, 1, 2 return of the sensor depending on whether the states match
+    if (closest_rid == -1) {
+        return 0
+    } else if (target_state == CUR_STATE) {
+        return 1
+    } else {
+        return 2
+    }
 }
 
 # just updates the variables that the loop functions read with the sensor reading.
 function updateFields(sensor_reading) {
-	cur_x = pose.position.x
-	cur_y = pose.position.y
-	cur_z = pose.orientation.yaw
-	cur_s = CUR_STATE
-	cur_r = sensor_reading
-	cur_speed = speed
-
+    cur_x = pose.position.x
+    cur_y = pose.position.y
+    cur_z = pose.orientation.yaw
+    cur_s = CUR_STATE
+    cur_r = sensor_reading
+    cur_speed = speed
 }
 
 function updateLEDS() {

@@ -151,9 +151,8 @@ int main(int argc, char *argv[]) {
     }
     LOG << std::endl;
     LOG.Flush();
+    UInt32 counter = 0;
 
-    bool first = true;
-    
     while (!cGA.Done()) {
         cGA.NextGen();
         cGA.Evaluate();
@@ -173,15 +172,9 @@ int main(int argc, char *argv[]) {
         LOG.Flush();
 
         FlushToMasterFile(cGA.getSlavePIDs(), randSeed, cGA.m_unCurrentGeneration);
+        RenameExperiments(cGA.getSlavePIDs(), randSeed, counter);
+        counter++;
 
-        if(first) {
-            first = false;
-            RenameExperiments(cGA.getSlavePIDs(), randSeed, 0);    
-        } else {
-            RenameExperiments(cGA.getSlavePIDs(), randSeed, cGA.m_unCurrentGeneration);    
-        }
-
-        
         LOG.Flush();
     }
     return 0;
