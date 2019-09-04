@@ -272,8 +272,8 @@ void CMPGAEmergentBehaviorLoopFunctions::Init(TConfigurationNode &t_node) {
 /****************************************/
 //For whatever reason, if you don't put the genome back each time step, it defaults back to the 0.0 defaults.
 void CMPGAEmergentBehaviorLoopFunctions::PreStep() {
-    PutGenome cPutGenome(m_pfControllerParams);
-    BuzzForeachVM(cPutGenome);
+    // PutGenome cPutGenome(m_pfControllerParams);
+    // BuzzForeachVM(cPutGenome);
 }
 /****************************************/
 /****************************************/
@@ -571,30 +571,15 @@ void CMPGAEmergentBehaviorLoopFunctions::CreateRobots(UInt32 un_robots) {
     CRadians robStep = CRadians::TWO_PI / static_cast<Real>(un_robots);
     CRadians cOrient;
 
-    Real posX[] = {1.125, 0.325, -0.325, -1.125, 1.125, 0.325, -0.325, -1.125,  1.125,  0.325, -0.325, -1.125,  1.125,  0.325, -0.325, -1.125};
-    Real posY[] = {1.125, 1.125,  1.125,  1.125, 0.325, 0.325,  0.325,  0.325, -0.325, -0.325, -0.325, -0.325, -1.125, -1.125, -1.125, -1.125};
-
     //for each robot, calculate the position based on spherical coordinates
     for (size_t i = 0; i < un_robots; ++i) {
+
         CRange<Real> distRange;
-        distRange.SetMin(-1.5);
-        distRange.SetMax(1.5);
+        distRange.SetMin(-1);
+        distRange.SetMax(1);
         Real dist_x = m_pcRNG->Uniform(distRange);
         Real dist_y = m_pcRNG->Uniform(distRange);
-        // CRadians posAng = m_pcRNG->Uniform(CRadians::UNSIGNED_RANGE);
-        CVector3 pos = CVector3(posX[i], posY[i], 0.0);
-        // pos.FromSphericalCoords(
-        //   dist,
-        //   CRadians::PI_OVER_TWO,
-        //   posAng
-        // );
-        // pos.FromSphericalCoords(
-        //     1.5f,
-        //     CRadians::PI_OVER_TWO,
-        //     CRadians(i * robStep)
-        //   );
-        //Make sure they're on the ground, otherwise it breaks
-        // pos.SetZ(0.0);
+        CVector3 pos = CVector3(dist_x), dist_y, 0.0);
 
         //Randomly choose the starting orientation
         CQuaternion head;
