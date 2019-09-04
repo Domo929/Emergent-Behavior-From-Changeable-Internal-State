@@ -32,7 +32,7 @@ struct PutGenome : public CBuzzLoopFunctions::COperation {
     explicit PutGenome(const std::vector<double> &vec_genome) : m_vecGenome(vec_genome) {}
 
     /** The action happens here */
-    virtual void operator()(const std::string& str_robot_id,
+    virtual void operator()(const std::string str_robot_id,
                               buzzvm_t t_vm) {
         /* Set the values of the table 'genome' in the Buzz VM */
         BuzzTableOpen(t_vm, "genome");
@@ -60,7 +60,7 @@ struct GetFinalRobotData : public CBuzzLoopFunctions::COperation {
     GetFinalRobotData(int t) : temp(t) {}
 
     /** The action happens here */
-    virtual void operator()(const std::string& str_robot_id,
+    virtual void operator()(const std::string str_robot_id,
                               buzzvm_t t_vm) {
 
         // get the buzzobj corresponding to the value we want
@@ -149,7 +149,7 @@ struct GetStepRobotData : public CBuzzLoopFunctions::COperation {
     GetStepRobotData(int t) : temp(t) {}
 
     /** The action happens here */
-    virtual void operator()(const std::string& str_robot_id,
+    virtual void operator()(const std::string str_robot_id,
                             buzzvm_t t_vm) {
 
         // get the buzzobj corresponding to the value we want
@@ -571,6 +571,9 @@ void CMPGAEmergentBehaviorLoopFunctions::CreateRobots(UInt32 un_robots) {
     CRadians robStep = CRadians::TWO_PI / static_cast<Real>(un_robots);
     CRadians cOrient;
 
+    Real posX[] = {1.125, 0.325, -0.325, -1.125, 1.125, 0.325, -0.325, -1.125,  1.125,  0.325, -0.325, -1.125,  1.125,  0.325, -0.325, -1.125};
+    Real posY[] = {1.125, 1.125,  1.125,  1.125, 0.325, 0.325,  0.325,  0.325, -0.325, -0.325, -0.325, -0.325, -1.125, -1.125, -1.125, -1.125};
+
     //for each robot, calculate the position based on spherical coordinates
     for (size_t i = 0; i < un_robots; ++i) {
         CRange<Real> distRange;
@@ -579,7 +582,7 @@ void CMPGAEmergentBehaviorLoopFunctions::CreateRobots(UInt32 un_robots) {
         Real dist_x = m_pcRNG->Uniform(distRange);
         Real dist_y = m_pcRNG->Uniform(distRange);
         // CRadians posAng = m_pcRNG->Uniform(CRadians::UNSIGNED_RANGE);
-        CVector3 pos = CVector3(dist_x, dist_y, 0.0);
+        CVector3 pos = CVector3(posX[i], posY[i], 0.0);
         // pos.FromSphericalCoords(
         //   dist,
         //   CRadians::PI_OVER_TWO,
