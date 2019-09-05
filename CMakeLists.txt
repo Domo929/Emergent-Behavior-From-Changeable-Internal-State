@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.12)
 project(emergent_behavior)
 set (CMAKE_CXX_STANDARD 11)
+add_definitions(-std=c++11)
 
 if (APPLE)
     option(ASAN "Use Clang Address Sanitizer in Debug builds")
@@ -31,10 +32,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${ARGOS_PREFIX}/share/argos3/cmake)
 include(ARGoSCheckQTOpenGL)
 
 # Find Lua
-find_package(Lua52)
-if (Lua52_FOUND)
-    include_directories(${LUA_INCLUDE_DIR})
-endif (Lua52_FOUND)
+#find_package(Lua52)
+#if (Lua52_FOUND)
+#    include_directories(${LUA_INCLUDE_DIR})
+#endif (Lua52_FOUND)
 
 find_package(Buzz REQUIRED)
 if(BUZZ_FOUND)
@@ -55,3 +56,6 @@ add_subdirectory(embedding)
 
 # Descend into the analysis directory
 add_subdirectory(analysis)
+
+# Desend into the buzz directory
+add_subdirectory(buzz)
