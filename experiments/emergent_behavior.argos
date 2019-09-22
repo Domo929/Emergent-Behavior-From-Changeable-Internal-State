@@ -28,8 +28,8 @@
                                    show_rays="true" noise_std_dev="0"/>
                 <positioning implementation="default"/>
             </sensors>
-            <params bytecode_file="buzz/emergent_behavior.bo"
-                    debug_file="buzz/emergent_behavior.bdb">
+            <params bytecode_file="/home/jbloom/Documents/Nest/emergent_behavior/Emergent-Behavior-From-Changeable-Internal-State/buzz/emergent_behavior.bo"
+                    debug_file="/home/jbloom/Documents/Nest/emergent_behavior/Emergent-Behavior-From-Changeable-Internal-State/buzz/emergent_behavior.bdb">
                 <wheel_turning hard_turn_angle_threshold="90"
                                soft_turn_angle_threshold="70"
                                no_turn_angle_threshold="10"
@@ -46,10 +46,10 @@
     <!-- ****************** -->
 
     <loop_functions
-            library="/home/cpinciroli/Emergent-Behavior-From-Changeable-Internal-State/build/loop_functions/libmpga_emergent_behavior_loop_functions.so"
+            library="/home/jbloom/Documents/Nest/emergent_behavior/Emergent-Behavior-From-Changeable-Internal-State/build/loop_functions/libmpga_emergent_behavior_loop_functions.so"
             
             label="mpga_emergent_behavior_loop_functions"
-            num_robots="15">
+            num_robots="16">
     </loop_functions>
 
     <!-- *********************** -->
@@ -111,10 +111,10 @@
     <!-- ****************** -->
     <!-- * Visualization * -->
     <!-- ****************** -->
-    <!--<visualization>-->
-        <!--<qt-opengl>-->
-            <!--<user_functions label="buzz_qt"/>-->
-        <!--</qt-opengl>-->
-    <!--</visualization>-->
+    <visualization>
+        <qt-opengl>
+           <user_functions label="buzz_qt"/>
+        </qt-opengl>
+    </visualization>
 
 </argos-configuration>

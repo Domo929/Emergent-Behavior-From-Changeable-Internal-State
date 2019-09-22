@@ -272,8 +272,8 @@ void CMPGAEmergentBehaviorLoopFunctions::Init(TConfigurationNode &t_node) {
 /****************************************/
 //For whatever reason, if you don't put the genome back each time step, it defaults back to the 0.0 defaults.
 void CMPGAEmergentBehaviorLoopFunctions::PreStep() {
-    PutGenome cPutGenome(m_pfControllerParams);
-    BuzzForeachVM(cPutGenome);
+    // PutGenome cPutGenome(m_pfControllerParams);
+    // BuzzForeachVM(cPutGenome);
 }
 /****************************************/
 /****************************************/

@@ -133,12 +133,12 @@ int main(int argc, char *argv[]) {
 
     CMPGA cGA(CRange<Real>(0, 10.0),                    // Allele range
               GENOME_SIZE,                              // Genome size
-              8, //change this to number of cores       // Population size
+              12, //change this to number of cores       // Population size
               0.1,                                     // Mutation probability
               1,                                        // Number of trials
-              1000, //make this not two                    // Number of generations
+              3000, //make this not two                    // Number of generations
               true,                                     // Maximize score (False will minimize score)
-              "/home/djcupo/Emergent-Behavior-From-Changeable-Internal-State/experiments/emergent_behavior.argos",    // .argos conf file
+              "/home/jbloom/Documents/Nest/emergent_behavior/Emergent-Behavior-From-Changeable-Internal-State/experiments/emergent_behavior.argos",    // .argos conf file
               &ScoreAggregator,                         // The score aggregator
               randSeed                                  // Random seed
     );
