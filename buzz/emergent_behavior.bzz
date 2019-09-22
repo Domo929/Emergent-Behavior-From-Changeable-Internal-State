@@ -20,24 +20,24 @@ tick = 0
 # (Type)(Reading)(State)
 #   s*      0       0
 genome = {
-    .0  = 0.0, #s`00
-    .1  = 1.0, #vl00
-    .2  = 1.0, #vr00
-    .3  = 0.0, #s`01
-    .4  = 1.0, #vl01
-    .5  = 1.0, #vr01
-    .6  = 0.0, #s`10
-    .7  = 1.0, #vl10
-    .8  = 1.0, #vr10
-    .9  = 0.0, #s`11
-    .10 = 1.0, #vl11
-    .11 = 1.0, #vr11
-    .12 = 0.0, #s`20
-    .13 = 1.0, #vl20
-    .14 = 1.0, #vr20
-    .15 = 0.0, #s`21
-    .16 = 1.0, #vl21
-    .17 = 1.0  #vr21
+    .0  = 4.53937, #s`00
+    .1  = 2.02263, #vl00
+    .2  = 8.13097, #vr00
+    .3  = 9.52277, #s`01
+    .4  = 7.40972, #vl01
+    .5  = 8.21849, #vr01
+    .6  = 9.98243, #s`10
+    .7  = 6.35274, #vl10
+    .8  = 8.4739, #vr10
+    .9  = 8.69345, #s`11
+    .10 = 9.1211, #vl11
+    .11 = 4.37758, #vr11
+    .12 = 1.48697, #s`20
+    .13 = 8.40281, #vl20
+    .14 = 4.12361, #vr20
+    .15 = 7.27065, #s`21
+    .16 = 0.979317, #vl21
+    .17 = 4.71391  #vr21
 }
 
 ### BUZZ FUNCTIONS ##
@@ -50,6 +50,12 @@ function init() {
 	cur_s = CUR_STATE
 	cur_r = 0
 	cur_speed = 0.0
+
+    t = {}
+    neighbor.listen("store",
+        function(vid, value, rid){
+            t[rid] = value
+        })
 }
 
 
@@ -147,15 +153,6 @@ function sensor(){
         else {
             return 2
         }
-    }
-
-    # state machine to determine the 0, 1, 2 return of the sensor depending on whether the states match
-    if (closest_rid == -1) {
-        return 0
-    } else if (target_state == CUR_STATE) {
-        return 1
-    } else {
-        return 2
     }
 }
 
